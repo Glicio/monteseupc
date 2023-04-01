@@ -1,15 +1,9 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
-
 
 import MainLayout from "../layouts/main";
 
 const Home: NextPage = () => {
-
-
-  const { data: session, status } = useSession();
-
   return (
     <>
       <Head>
@@ -19,7 +13,7 @@ const Home: NextPage = () => {
       </Head>
 
       <MainLayout>
-        <div className="items-center justify-center gap-4 bg-[var(--color-primary)] flex-grow p-2">
+        <div className="flex-grow items-center justify-center gap-4 bg-[var(--color-primary)] p-2">
           <h1 className="text-6xl font-bold text-white">
             Welcome to <a href="https://nextjs.org">MonteSeuPC</a>
           </h1>
@@ -30,5 +24,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-
