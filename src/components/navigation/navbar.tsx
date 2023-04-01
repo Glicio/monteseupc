@@ -1,11 +1,15 @@
-import React from 'react'
-import UserButton from '../user/userButton'
+import React from "react";
+import UserButton from "../user/userButton";
 
 export default function NavBar() {
-    return (
-        <header className=' h-[var(--nav-bar-height)] bg-[var(--color-primary)] text-[var(--color-text-primary)] flex items-center px-2 border-b border-[var(--color-neutral-1)]'>
-            <h1 className='text-[var(--color-contrast)] font-extrabold text-xl'>Logo</h1>
-            <UserButton/>
-        </header>
-    )
+  return (
+    <header className="flex h-[var(--nav-bar-height)] items-center border-b border-[var(--color-neutral-1)] bg-[var(--color-primary)] px-2 text-[var(--color-text-primary)]">
+      <h1 className="text-xl font-extrabold text-[var(--color-contrast)]">
+        Logo
+      </h1>
+      <div className="ml-auto">
+        <UserButton />
+      </div>
+    </header>
+  );
 }
