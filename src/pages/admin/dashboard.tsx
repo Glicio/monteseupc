@@ -28,7 +28,7 @@ const Dashboard: NextPage = () => {
         <title>Admin Dashboard</title>
       </Head>
       <MainLayout>
-        <div className="flex h-full flex-grow bg-[var(--color-primary)] text-[var(--color-text-primary)]">
+        <div className="flex flex-grow bg-[var(--color-primary)] text-[var(--color-text-primary)]">
           <SideMenu>
             <SideMenuButton label="Solicitações" />
             <SideMenuButton label="Peças" />
