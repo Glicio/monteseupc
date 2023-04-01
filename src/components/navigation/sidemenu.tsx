@@ -23,9 +23,8 @@ export const SideMenuButton = ({
 export default function SideMenu({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-[var(--side-menu-width)] bg-[var(--color-neutral-2)] text-[var(--color-text-primary)]">
-      <div className="fixed flex w-[var(--side-menu-width)] flex-col">
         {children}
-      </div>
+
     </div>
   );
 }
