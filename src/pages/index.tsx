@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Create T3 App</title>
+        <title>Monte Seu PC!</title>
         <meta name="description" content="Monte Seu PC!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
