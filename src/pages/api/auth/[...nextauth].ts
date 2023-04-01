@@ -19,6 +19,27 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async signIn({ user }) {
+      if(user.id){
+        try {
+
+
+          await prisma.user.update({
+            where: {
+              id: user.id
+            },
+            data: {
+              lastLogin: new Date()
+            }
+          })
+        }
+        catch (error) {
+          console.info("Error updating last login", error);
+        }
+
+      }
+      return true
+    }
   },
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
