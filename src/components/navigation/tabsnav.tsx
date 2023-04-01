@@ -28,7 +28,7 @@ const Tab = ({
           color: active ? "var(--color-contrast)" : "var(--color-text-primary)",
         }}
       >
-        {icon}
+        <div className="w-6 h-6">{icon}</div>
         <span>{label}</span>
       </div>
     </Link>
