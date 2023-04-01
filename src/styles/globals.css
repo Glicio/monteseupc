@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+body, html{
+  height: 100%;
+}
+
+body{
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
+}
+
 * {
   /* variables */
 
@@ -14,6 +23,7 @@
   /* sizes */
   --side-menu-width: 10rem;
   --nav-bar-height: 3rem;
+  --tabs-nav-height: 4rem;
 }
 
 .primary-button{
