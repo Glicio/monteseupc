@@ -23,27 +23,6 @@ const Home: NextPage = () => {
           <h1 className="text-6xl font-bold text-white">
             Welcome to <a href="https://nextjs.org">MonteSeuPC</a>
           </h1>
-          {status === "loading" && <p>Loading...</p>}
-          {status === "unauthenticated" && (
-            <button
-              className="bg-[var(--color-contrast)] text-[var(--color-primary)] rounded-md p-2"
-              onClick={() => void signIn()}
-            >
-              Sign in
-            </button>
-          )}
-          {status === "authenticated" && (
-            <>
-              <p className="text-white">Signed in as {session?.user?.email}</p>
-              <button
-
-                className="bg-[var(--color-contrast)] text-[var(--color-primary)] rounded-md p-2"
-                onClick={() => void signOut()}
-              >
-                Sign out
-              </button>
-            </>
-          )}
         </div>
       </MainLayout>
     </>
