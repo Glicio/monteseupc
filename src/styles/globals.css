@@ -2,17 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  /* variables */
 
+  /* colors */
+  --color-primary: #000000;
+  --color-contrast: #845ec2;
+  --color-neutral-1: #16181c;
+  --color-neutral-2: #2f3238;
+  --color-text-primary: white;
+  /* sizes */
+  --side-menu-width: 10rem;
+  --nav-bar-height: 3rem;
+}
 
-*{
-    /* variables */
+.default-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid var(--color-neutral-2);
+}
 
-    /* colors */
-    --color-primary: #000000;
-    --color-contrast: #845EC2;
-    --color-neutral-1: #16181C;
-    --color-neutral-2: #16181C;
-    --color-text-primary: white;
-    /* sizes */
-    --nav-bar-height: 3rem;
+.default-table thead {
+  background-color: var(--color-neutral-2);
+  color: var(--color-text-primary);
+}
+.default-table tbody > tr,
+td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-neutral-2);
 }
