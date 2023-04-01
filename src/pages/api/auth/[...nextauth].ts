@@ -6,13 +6,16 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db";
+import { User } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
   callbacks: {
     session({ session, user }) {
+      const dbUser = user as User
       if (session.user) {
         session.user.id = user.id;
+        session.user.isAdmin = dbUser.isAdmin || false;
       }
       return session;
     },
