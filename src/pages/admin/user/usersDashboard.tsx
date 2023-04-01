@@ -1,9 +1,39 @@
 import React, { useEffect, useState } from 'react'
 import { api } from '../../../utils/api';
-import { User } from '@prisma/client';
+import { type User } from '@prisma/client';
+
+import style from "./usersDashboard.module.css"
+
+
+
+
+const UserController = ({user, back}: {user: User, back: () => void}) => {
+    return (
+        <div>
+            <div className={style.userInfoRow}>
+                <span>Nome: </span>
+                <span>{user.name}</span>
+            </div>
+            <div className={style.userInfoRow}>
+                <span>Email: </span>
+                <span>{user.email}</span>
+            </div>
+            <div className={style.userInfoRow}>
+                <span>Data de Cadastro: </span>
+                <span>{user.createdAt.toLocaleString()}</span>
+            </div>
+            <div className={style.userInfoRow}>
+                <span>Último Login: </span>
+                <span>{user.lastLogin.toLocaleString()}</span>
+                </div>
+        </div>
+    )
+}
+
 
 const UserComponent = () => {
     const [users, setUsers] = useState<User[]>([]);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userCount, setUserCount] = useState(0);
     const [limit, setLimit] = useState(10);
     const [offset, setOffset] = useState(0);
@@ -19,6 +49,10 @@ const UserComponent = () => {
       usersMutation.mutate({ searchTerm: "" });
     }, []);
   
+    if(currentUser) return (
+        <UserController user={currentUser} back={() => setCurrentUser(null)} />
+    )
+
     return (
       <div className="w-full ">
           <span>{userCount} usuários encontrados</span>
@@ -49,7 +83,7 @@ const UserComponent = () => {
               users.length > 0 &&
               users.map((user) => (
                 <tr key={user.id}>
-                  <td>{user.name}</td>
+                  <td><button onClick={() => {setCurrentUser(user)}} className='hover:text-[var(--color-contrast)]'>{user.name}</button></td>
                   <td>{user.email}</td>
                 </tr>
               ))}
