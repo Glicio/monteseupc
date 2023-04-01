@@ -22,8 +22,6 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       if(user.id){
         try {
-
-
           await prisma.user.update({
             where: {
               id: user.id
