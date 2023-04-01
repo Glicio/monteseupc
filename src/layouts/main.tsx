@@ -1,5 +1,6 @@
 import React from "react";
 import NavBar from "../components/navigation/navbar";
+import TabsNav from "../components/navigation/tabsnav";
 
 export default function MainLayout({
   children,
@@ -9,7 +10,14 @@ export default function MainLayout({
   return (
     <>
       <NavBar />
-      <div className="min-h-[calc(100vh-var(--nav-bar-height))] flex flex-col">
+      <TabsNav />
+      <div
+        style={{
+          minHeight:
+            "calc(100vh - (var(--tabs-nav-height) + var(--nav-bar-height)))",
+        }}
+        className="flex flex-col"
+      >
         {children}
       </div>
     </>
