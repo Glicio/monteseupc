@@ -183,7 +183,6 @@ const UserComponent = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userCount, setUserCount] = useState(0);
   const [limit, setLimit] = useState(10);
-  const [offset, setOffset] = useState(0);
 
   const usersMutation = api.user.admin.get.useMutation({
     onSuccess: (data) => {
@@ -194,6 +193,7 @@ const UserComponent = () => {
 
   useEffect(() => {
     usersMutation.mutate({ searchTerm: "" });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (currentUser)
