@@ -21,7 +21,9 @@ export const SideMenuSection = ({
         <Arrow side={active ? "down" : "right"} />
         <span>{label}</span>
       </button>
-      <div className={active ? "pl-2" : "max-h-0 overflow-hidden"}>{children}</div>
+      <div className={active ? "pl-2" : "max-h-0 overflow-hidden"}>
+        {children}
+      </div>
     </div>
   );
 };
@@ -48,7 +50,7 @@ export const SideMenuButton = ({
 
 export default function SideMenu({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-[var(--side-menu-width)] bg-[var(--color-neutral-2)] text-[var(--color-text-primary)] pl-2">
+    <div className="w-[var(--side-menu-width)] border-r border-[var(--color-neutral-1)] bg-[var(--color-neutral-2)] p-2 text-[var(--color-text-primary)]">
       {children}
     </div>
   );

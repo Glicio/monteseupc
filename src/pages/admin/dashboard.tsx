@@ -38,6 +38,8 @@ const Dashboard: NextPage = () => {
       <MainLayout>
         <div className="flex flex-grow bg-[var(--color-primary)] text-[var(--color-text-primary)]">
           <SideMenu>
+            <span className="font-bold">Painel Administrativo</span>
+            <div className="w-full border-b border-[var(--color-text-primary)] my-3"></div>
             <SideMenuButton
               label="Usuários"
               onClick={() => {
