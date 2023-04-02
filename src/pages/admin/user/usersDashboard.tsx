@@ -30,6 +30,7 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
 
   const [confirmAdmin, setConfirmAdmin] = useState(false);
   const [confirmMod, setConfirmMod] = useState(false);
+  const [confirmBan, setConfirmBan] = useState(false);
 
   const promote = api.user.admin.setRole.useMutation({
     onSuccess: () => {
@@ -41,6 +42,17 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
       toast.error("Erro ao promover usuário!");
     },
   });
+
+  const banUser = api.user.admin.banUser.useMutation({
+    onSuccess: () => {
+      toast.success("Usuário banido com sucesso!");
+      setConfirmBan(false);
+    },
+    onError: () => {
+      toast.error("Erro ao banir usuário!");
+    },
+  });
+
 
   return (
     <div>
@@ -70,6 +82,19 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
         confirmText={user.name || "CONFIRMAR"}
         title={user.isMod ? "Remover Moderador" : "Tornar Moderador"}
       />
+      {/* Confirmar que quer banir usuário */}
+      <ConfirmDialog
+        onClose={() => setConfirmBan(false)}
+        onConfirm={() =>
+          banUser.mutate({
+            id: user.id,
+            ban: !user.isBanned,
+          })
+        }
+        open={confirmBan}
+        confirmText={user.isBanned ? `DESBANIR ${user.name?.toUpperCase() || "USUÁRIO"}` : `BANIR ${user.name?.toUpperCase() || "USUÁRIO"}`}
+        title={user.isBanned ? "Desbanir Usuário?" : "Banir Usuário?"}
+      />
       <div className="mx-auto w-[25rem]">
         <div className="pfp mx-auto h-24 w-24 overflow-hidden rounded-full">
           {user.image ? (
@@ -97,7 +122,9 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
           >
             {user.isMod ? "Remover Moderador" : "Tornar Moderador"}
           </button>
-          <button className="primary-button">Banir</button>
+          <button className="primary-button"
+          onClick={() => setConfirmBan(true)}
+          >{user.isBanned ? "Desbanir Usuário" : "Banir Usuário"}</button>
           <button className="primary-button">Silenciar</button>
         </div>
         <table
