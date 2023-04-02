@@ -13,7 +13,7 @@ export const user = createTRPCRouter({
           skip: z.number().optional(),
         })
       )
-      .mutation(async ({ input }) => {
+      .query(async ({ input }) => {
         const { searchTerm, take, skip } = input;
         const where = searchTerm
           ? {
