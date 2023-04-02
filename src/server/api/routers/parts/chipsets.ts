@@ -123,7 +123,6 @@ export const chipsets = createTRPCRouter({
             ],
           }
         : undefined;
-      try {
         const count = await prisma.chipset.count({
             where: where,
             });
@@ -137,11 +136,5 @@ export const chipsets = createTRPCRouter({
           },
         });
         return {chipsets, count, pages: Math.ceil(count / (take || 1))};
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Erro ao buscar chipsets",
-        });
-      }
     }),
 });

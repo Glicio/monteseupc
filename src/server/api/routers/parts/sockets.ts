@@ -70,15 +70,30 @@ export const sockets = createTRPCRouter({
         }
       }),
   }),
-  getAll: publicProcedure.input(z.object({}).optional()).query(async () => {
-    try {
-      const sockets = await prisma.socket.findMany();
-      return sockets;
-    } catch (error) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Erro ao buscar sockets",
+  getAll: publicProcedure.input(z.object({
+    searchTerm: z.string().optional(),
+    skip: z.number().optional(),
+    take: z.number().optional(),
+  })).query(async ({input}) => {
+
+      const { searchTerm, skip, take } = input;
+
+      const where = searchTerm ? {
+        OR: [
+          { name: { contains: searchTerm} },
+          { brand: { contains: searchTerm} },
+        ],
+      } : undefined;
+
+      const count = await prisma.socket.count({
+        where,
       });
-    }
+      const sockets = await prisma.socket.findMany({
+        where,
+        skip,
+        take,
+      });
+      return {sockets, count, pages: Math.ceil(count / (take || 1))};
+
   }),
 });
