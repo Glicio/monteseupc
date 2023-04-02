@@ -5,6 +5,7 @@ import { api } from "../../../utils/api";
 import { AppContext } from "../../../components/context/AppContext";
 import Refresh from "../../../components/svg/refresh";
 import ConfirmDialog from "../../../components/input/confirmDialog";
+import TableSearchForm from "../../../components/input/tableSearchForm";
 
 const SocketForm = ({
   socketToEdit,
@@ -47,7 +48,7 @@ const SocketForm = ({
   return (
     <div className="p-2">
       <BackButton onClick={back} />
-       {socketToEdit && (
+      {socketToEdit && (
         <ConfirmDialog
           open={toDelete}
           title="Excluir Socket"
@@ -77,16 +78,16 @@ const SocketForm = ({
             {socketToEdit ? "Editar Socket" : "Adicionar novo Socket"}
           </h2>
           {socketToEdit ? (
-        <button
-          className="secondary-button"
-          type="button"
-          onClick={() => {
-            setToDelete(true);
-          }}
-        >
-          Excluir
-        </button>
-      ) : null}
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => {
+                setToDelete(true);
+              }}
+            >
+              Excluir
+            </button>
+          ) : null}
         </div>
         <input
           type="text"
@@ -104,7 +105,9 @@ const SocketForm = ({
           onChange={handleInputChange}
           placeholder="Marca"
         />
-        <button className="primary-button" type="submit">Salvar</button>
+        <button className="primary-button" type="submit">
+          Salvar
+        </button>
       </form>
     </div>
   );
@@ -113,9 +116,15 @@ const SocketForm = ({
 export default function Sockets() {
   const [currentSocket, setCurrentSocket] = React.useState<Socket | null>();
   const [createMode, setCreateMode] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [page, setPage] = React.useState(1);
 
   const socketQuery = api.parts.sockets.getAll.useQuery(
-    {},
+    {
+      skip: page-1,
+      searchTerm,
+      take: 10,
+    },
     {
       refetchOnWindowFocus: false,
     }
@@ -133,11 +142,33 @@ export default function Sockets() {
 
   return (
     <div className="p-2">
+      <div className="header">
+        <h1 className="text-2xl">Sockets</h1>
+        <span className="text-sm text-[var(--color-neutral-2)]">
+          {socketQuery.data?.count
+            ? `${socketQuery.data?.count} encontrados`
+            : "Carregando..."}
+        </span>
+      </div>
       <button className="primary-button" onClick={() => setCreateMode(true)}>
         Incluir
       </button>
       <table className="default-table mt-4">
         <thead>
+          <tr>
+            <th colSpan={2}>
+              <TableSearchForm
+                numberOfPages={socketQuery.data?.pages || 1}
+                page={page}
+                refresh={() => {
+                  void socketQuery.refetch();
+                }}
+                setSearchTerm={(value) => setSearchTerm(value)}
+                setPage={(value) => setPage(value)}
+
+              />
+            </th>
+          </tr>
           <tr>
             <th>Nome</th>
             <th>
@@ -159,7 +190,7 @@ export default function Sockets() {
               <td colSpan={2}>Carregando...</td>
             </tr>
           ) : null}
-          {socketQuery.data?.map((socket) => (
+          {socketQuery.data?.sockets?.map((socket) => (
             <tr key={socket.id}>
               <td>
                 <button
