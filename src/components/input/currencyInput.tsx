@@ -1,6 +1,15 @@
 import React from "react";
 import styles from "./currencyInput.module.css"
 
+
+/**
+* @param value - the real value of the input
+* @param setValue - the function to set the value
+* @param locale - the locale to be used in the input
+* @param currencyLength - the length of the currency symbol, defaults to 2
+* @returns a currency input that shows a formatted value (real value / 100) and sets the real value to a integer (not float)
+*/
+
 export default function CurrencyInput({
   value,
   setValue,
