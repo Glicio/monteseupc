@@ -8,7 +8,7 @@ export default function UserCircle() {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="h-8 w-8"
+      // className="h-8 w-8"
     >
       <path
         strokeLinecap="round"
