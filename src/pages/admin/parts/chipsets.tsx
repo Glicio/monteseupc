@@ -24,7 +24,7 @@ const ChipsetForm = ({
   );
   const [toDelete, setToDelete] = React.useState(false);
 
-  const sockets = api.parts.sockets.getAll.useQuery();
+  const sockets = api.parts.sockets.getAll.useQuery({}, { refetchOnWindowFocus: false });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -126,7 +126,7 @@ const ChipsetForm = ({
         >
           <option value="">Selecione um socket</option>
           {sockets.isLoading ? <option>Carregando...</option> : null}
-          {sockets.data?.map((socket) => (
+          {sockets.data?.sockets?.map((socket) => (
             <option key={socket.id} value={socket.id}>
               {socket.name}
             </option>
@@ -146,7 +146,7 @@ export default function Chipsets() {
   const [searchInput, setSearchInput] = React.useState("");
   const [page, setPage] = React.useState(1);
   //maximo de itens por pagina
-  const limit = 8;
+  const limit = 10;
 
   const chipsetQuery = api.parts.chipsets.getAll.useQuery(
     {
