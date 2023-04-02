@@ -16,10 +16,21 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = user.id;
         session.user.isAdmin = dbUser.isAdmin || false;
+        session.user.isMod = dbUser.isMod || false;
+        session.user.isBanned = dbUser.isBanned || false;
+        session.user.isMutted = dbUser.isMutted || false;
       }
       return session;
     },
     async signIn({ user }) {
+      const dbUser = user as User
+
+      if(dbUser.isBanned){
+        if(this.redirect) return this.redirect({ url: "/banned", baseUrl: env.NEXTAUTH_URL })
+        return false
+      }
+      
+
       if(user.id){
         try {
           await prisma.user.update({
