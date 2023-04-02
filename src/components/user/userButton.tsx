@@ -17,7 +17,9 @@ export default function UserButton() {
         {session?.user ? (
           <UserProfilePic />
         ) : (
-          <UserCircle/>
+          <div className="h-8 w-8">
+            <UserCircle />
+          </div>
         )}
       </button>
       {showMenu ? (
