@@ -1,0 +1,5 @@
+
+
+.userInfoTable tr > td:first-child{
+    font-weight: bold;
+}
