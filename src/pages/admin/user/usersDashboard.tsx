@@ -31,7 +31,7 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
   const [confirmAdmin, setConfirmAdmin] = useState(false);
   const [confirmMod, setConfirmMod] = useState(false);
 
-  const promote = api.user.admin.promote.useMutation({
+  const promote = api.user.admin.setRole.useMutation({
     onSuccess: () => {
       toast.success("Usuário promovido com sucesso!");
       setConfirmAdmin(false);

@@ -61,7 +61,7 @@ export const user = createTRPCRouter({
           throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Erro interno do servidor"});
         }
       }),
-      promote: adminProcedure.input(z.object({
+      setRole: adminProcedure.input(z.object({
         id: z.string(),
         role: z.enum(['ADMIN', 'USER', 'MODERATOR'])
       })).mutation(async ({input}) => {
