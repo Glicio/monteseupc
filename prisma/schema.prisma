@@ -61,3 +61,76 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model Socket {
+  id           String        @id @default(cuid())
+  name         String
+  brand        String
+  motherBoards MotherBoard[]
+  cpus         CPU[]
+  chipsets     Chipset[]
+}
+
+model Chipset {
+  id           String        @id @default(cuid())
+  name         String
+  brand        String
+  socketId     String
+  socket       Socket        @relation(fields: [socketId], references: [id])
+  motherBoards MotherBoard[]
+
+  @@index([socketId])
+}
+
+model MotherBoard {
+  id          String  @id @default(cuid())
+  name        String
+  socketId    String
+  socket      Socket  @relation(fields: [socketId], references: [id])
+  brand       String
+  price       Int
+  image       String
+  ramSlots    Int
+  ramType     String
+  ramMaxSize  Int
+  ramMaxSpeed Int
+  ramEcc      Boolean
+  usb2        Int
+  usb3        Int
+  usb3_1      Int
+  usb3_2      Int
+  usbTypeC    Int
+  sata        Int
+  m2          Int
+  pcieX16     Int
+  pcieX4      Int
+  size        String
+  chipsetId   String
+  chipset     Chipset @relation(fields: [chipsetId], references: [id])
+
+  @@index([socketId])
+  @@index([chipsetId])
+}
+
+model CPU {
+  id            String   @id @default(cuid())
+  name          String
+  image         String
+  socketId      String
+  socket        Socket   @relation(fields: [socketId], references: [id])
+  brand         String
+  generation    Int
+  price         Int
+  cores         Int
+  threads       Int
+  baseClock     Int
+  boostClock    Int
+  tdp           Int
+  cache1        Int
+  cache2        Int
+  cache3        Int
+  launchDate    DateTime
+  integratedGpu Boolean
+
+  @@index([socketId])
+}
