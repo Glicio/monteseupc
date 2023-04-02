@@ -143,7 +143,6 @@ const ChipsetForm = ({
 export default function Chipsets() {
   const [currentChipset, setCurrentChipset] = React.useState<Chipset | null>();
   const [createMode, setCreateMode] = React.useState(false);
-  const [search, setSearch] = React.useState("");
   const [searchInput, setSearchInput] = React.useState("");
   const [page, setPage] = React.useState(1);
   //maximo de itens por pagina
@@ -153,21 +152,14 @@ export default function Chipsets() {
     {
       take: limit,
       skip: (page - 1) * limit,
-      search,
+      searchTerm: searchInput,
     },
     {
       refetchOnWindowFocus: false,
     }
   );
 
-  useEffect(() => {
-    const searchDebounce = setTimeout(() => {
-      setSearch(searchInput);
-    }, 500);
-    return () => {
-      clearTimeout(searchDebounce);
-    };
-  }, [searchInput]);
+
 
   const closeCreateEditMode = () => {
     setCurrentChipset(null);
@@ -205,10 +197,7 @@ export default function Chipsets() {
                   setPage(value);
                 }}
                 refresh={() => void chipsetQuery.refetch()}
-                searchInput={searchInput}
-                setSearchInput={(value) => setSearchInput(value)}
-
-
+                setSearchTerm={(value) => setSearchInput(value)}
               />
             </th>
           </tr>

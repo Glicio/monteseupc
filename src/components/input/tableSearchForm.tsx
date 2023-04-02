@@ -1,30 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SimplePagination from "./simplePagination";
 import Refresh from "../svg/refresh";
 
 export default function TableSearchForm({
-  searchInput,
-  setSearchInput,
+  searchTerm,
+  setSearchTerm,
   page,
   setPage,
   numberOfPages,
   refresh
 }: {
-  searchInput: string;
-  setSearchInput: (value: string) => void;
+  setSearchTerm: (value: string) => void;
   page: number;
   setPage: (value: number) => void;
   numberOfPages: number;
   refresh: () => void;
+  searchTerm?: string;
 }) {
+
+  const [input, setInput] = React.useState<string>(searchTerm || "");
+
+  useEffect(() => {
+    const searchDebounce = setTimeout(() => {
+      setSearchTerm(input);
+    }
+    , 500);
+
+    return () => {
+      clearTimeout(searchDebounce);
+    }
+  },[input])
+
   return (
     <div className="col-start-3 ml-auto mr-2 flex w-fit items-center justify-end gap-2">
       <input
         type="text"
         className="default-text-input"
-        value={searchInput}
+        value={input}
         onChange={(e) => {
-          setSearchInput(e.target.value);
+          setInput(e.target.value);
         }}
         placeholder="Procurar"
       />
