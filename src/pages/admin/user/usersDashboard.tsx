@@ -231,24 +231,13 @@ const UserComponent = () => {
 
   return (
     <div className="w-full ">
-      <span>
-        {usersList.data?.count
-          ? `${usersList.data.count} usuários encontrados`
-          : "Carregando..."}
-      </span>
-      <div>
-        <label htmlFor="limit ">Limite</label>
-        <select
-          id="limit"
-          className="ml-2 text-black"
-          value={limit}
-          onChange={(e) => setLimit(Number(e.target.value))}
-        >
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </select>
+      <div className="header">
+        <h1 className="text-2xl">Usuários</h1>
+        <span className="text-sm text-[var(--color-neutral-2)]">
+          {usersList.data?.count
+            ? `${usersList.data?.count} encontrados`
+            : "Carregando..."}
+        </span>
       </div>
 
       <table className="default-table">
