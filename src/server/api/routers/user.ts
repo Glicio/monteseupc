@@ -14,46 +14,32 @@ export const user = createTRPCRouter({
         })
       )
       .mutation(async ({ input }) => {
-        const { searchTerm } = input;
+        const { searchTerm, take, skip } = input;
+        const where = searchTerm
+          ? {
+              OR: [
+                {
+                  name: {
+                    contains: searchTerm,
+                  },
+                },
+                {
+                  email: {
+                    contains: searchTerm,
+                  },
+                },
+              ],
+            }
+          : undefined;
         const count = await prisma.user.count({
-          where: searchTerm
-            ? {
-                OR: [
-                  {
-                    name: {
-                      contains: searchTerm,
-                    },
-                  },
-                  {
-                    email: {
-                      contains: searchTerm,
-                    },
-                  },
-                ],
-              }
-            : undefined,
+          where,
         });
         const users = await prisma.user.findMany({
-          where: searchTerm
-            ? {
-                OR: [
-                  {
-                    name: {
-                      contains: searchTerm,
-                    },
-                  },
-                  {
-                    email: {
-                      contains: searchTerm,
-                    },
-                  },
-                ],
-              }
-            : undefined,
-          take: input.take || 10,
-          skip: input.skip || 0,
+          where,
+          take: take || undefined,
+          skip: skip || undefined,
         });
-        return { users, count };
+        return { users, count, pages: Math.ceil(count / (take || 1)) };
       }),
     setRole: adminProcedure
       .input(
