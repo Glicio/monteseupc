@@ -5,7 +5,7 @@ import { createTRPCRouter, adminProcedure } from "../trpc";
 
 export const user = createTRPCRouter({
   admin: createTRPCRouter({
-    get: adminProcedure
+    getAll: adminProcedure
       .input(
         z.object({
           searchTerm: z.string().optional(),
@@ -31,11 +31,12 @@ export const user = createTRPCRouter({
               ],
             }
           : undefined;
+
         const count = await prisma.user.count({
-          where,
+          where: where,
         });
         const users = await prisma.user.findMany({
-          where,
+          where: where,
           take: take || undefined,
           skip: skip || undefined,
         });

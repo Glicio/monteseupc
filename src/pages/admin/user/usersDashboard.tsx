@@ -8,22 +8,39 @@ import Image from "next/image";
 import UserCircle from "../../../components/svg/userCircle";
 import { AppContext } from "../../../components/context/AppContext";
 import ConfirmDialog from "../../../components/input/confirmDialog";
+import TableSearchForm from "../../../components/input/tableSearchForm";
 
-
-
-const RoleText = ({text}: {text: "ADMIN" | "MOD" | "USER"}) => {
-
-
-  if(text === "ADMIN") return (
-    <p>Ao confirmar, o usuário terá acesso a todas as funcionalidades de administrador.<br/> <span className="font-bold text-red-400">O usuário só pode ter um cargo por vez.</span></p>
-  )
-  if(text === "MOD") return (
-    <p>Ao confirmar, o usuário terá acesso a todas as funcionalidades de moderador.<br/> <span className="font-bold text-red-400">O usuário só pode ter um cargo por vez.</span></p>
-  )
+const RoleText = ({ text }: { text: "ADMIN" | "MOD" | "USER" }) => {
+  if (text === "ADMIN")
+    return (
+      <p>
+        Ao confirmar, o usuário terá acesso a todas as funcionalidades de
+        administrador.
+        <br />{" "}
+        <span className="font-bold text-red-400">
+          O usuário só pode ter um cargo por vez.
+        </span>
+      </p>
+    );
+  if (text === "MOD")
+    return (
+      <p>
+        Ao confirmar, o usuário terá acesso a todas as funcionalidades de
+        moderador.
+        <br />{" "}
+        <span className="font-bold text-red-400">
+          O usuário só pode ter um cargo por vez.
+        </span>
+      </p>
+    );
   return (
-    <p>Ao confirmar, o usuário perderar os direitos de administrador/moderador, caso você estiver retirando suas própias permissões perderá o acesso à este painel!</p>
-  )
-}
+    <p>
+      Ao confirmar, o usuário perderar os direitos de administrador/moderador,
+      caso você estiver retirando suas própias permissões perderá o acesso à
+      este painel!
+    </p>
+  );
+};
 
 const UserController = ({ user, back }: { user: User; back: () => void }) => {
   const { toast } = useContext(AppContext);
@@ -36,7 +53,7 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
     onSuccess: () => {
       toast.success("Usuário promovido com sucesso!");
       setConfirmAdmin(false);
-      setConfirmMod(false)
+      setConfirmMod(false);
     },
     onError: () => {
       toast.error("Erro ao promover usuário!");
@@ -53,7 +70,6 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
     },
   });
 
-
   return (
     <div>
       <BackButton onClick={() => back()} />
@@ -63,7 +79,7 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
         onConfirm={() =>
           promote.mutate({ id: user.id, role: user.isAdmin ? "USER" : "ADMIN" })
         }
-        description={<RoleText text={user.isAdmin ? "USER" : "ADMIN"}/>}
+        description={<RoleText text={user.isAdmin ? "USER" : "ADMIN"} />}
         open={confirmAdmin}
         confirmText={user.name || "CONFIRMAR"}
         title={user.isAdmin ? "Remover Admin" : "Tornar Admin"}
@@ -71,7 +87,7 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
       {/* Confirmar que quer dar/tirar direitos de mod */}
       <ConfirmDialog
         onClose={() => setConfirmMod(false)}
-        description={<RoleText text={user.isMod ? "USER" : "MOD"}/>}
+        description={<RoleText text={user.isMod ? "USER" : "MOD"} />}
         onConfirm={() =>
           promote.mutate({
             id: user.id,
@@ -92,7 +108,11 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
           })
         }
         open={confirmBan}
-        confirmText={user.isBanned ? `DESBANIR ${user.name?.toUpperCase() || "USUÁRIO"}` : `BANIR ${user.name?.toUpperCase() || "USUÁRIO"}`}
+        confirmText={
+          user.isBanned
+            ? `DESBANIR ${user.name?.toUpperCase() || "USUÁRIO"}`
+            : `BANIR ${user.name?.toUpperCase() || "USUÁRIO"}`
+        }
         title={user.isBanned ? "Desbanir Usuário?" : "Banir Usuário?"}
       />
       <div className="mx-auto w-[25rem]">
@@ -117,14 +137,20 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
           >
             {user.isAdmin ? "Remover Admin" : "Tornar Admin"}
           </button>
-          <button className="primary-button"
-            onClick={() => {setConfirmMod(true)}}
+          <button
+            className="primary-button"
+            onClick={() => {
+              setConfirmMod(true);
+            }}
           >
             {user.isMod ? "Remover Moderador" : "Tornar Moderador"}
           </button>
-          <button className="primary-button"
-          onClick={() => setConfirmBan(true)}
-          >{user.isBanned ? "Desbanir Usuário" : "Banir Usuário"}</button>
+          <button
+            className="primary-button"
+            onClick={() => setConfirmBan(true)}
+          >
+            {user.isBanned ? "Desbanir Usuário" : "Banir Usuário"}
+          </button>
           <button className="primary-button">Silenciar</button>
         </div>
         <table
@@ -179,22 +205,24 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
 };
 
 const UserComponent = () => {
-  const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [userCount, setUserCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
   const [limit, setLimit] = useState(10);
 
-  const usersMutation = api.user.admin.get.useMutation({
-    onSuccess: (data) => {
-      setUsers(data.users);
-      setUserCount(data.count);
+  const usersList = api.user.admin.getAll.useQuery(
+    {
+      skip: page-1,
+      take: limit,
+      searchTerm,
     },
-  });
-
-  useEffect(() => {
-    usersMutation.mutate({ searchTerm: "" });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    { refetchOnWindowFocus: false,
+    onSuccess: (data) => {
+      console.log(data);
+      
+    }
+     }
+  );
 
   if (currentUser)
     return (
@@ -203,7 +231,11 @@ const UserComponent = () => {
 
   return (
     <div className="w-full ">
-      <span>{userCount} usuários encontrados</span>
+      <span>
+        {usersList.data?.count
+          ? `${usersList.data.count} usuários encontrados`
+          : "Carregando..."}
+      </span>
       <div>
         <label htmlFor="limit ">Limite</label>
         <select
@@ -222,14 +254,26 @@ const UserComponent = () => {
       <table className="default-table">
         <thead>
           <tr>
+            <td colSpan={2}>
+              <TableSearchForm
+                numberOfPages={usersList.data?.pages || 1}
+                page={page}
+                refresh={() => {
+                  void usersList.refetch();
+                }}
+                setSearchTerm={(value) => setSearchTerm(value)}
+                setPage={(value) => setPage(value)}
+              />
+            </td>
+          </tr>
+          <tr>
             <th>Nome</th>
             <th>Email</th>
           </tr>
         </thead>
         <tbody>
-          {!usersMutation.isLoading &&
-            users.length > 0 &&
-            users.map((user) => (
+          {!!usersList.data &&
+            usersList.data.users.map((user) => (
               <tr key={user.id}>
                 <td>
                   <button
@@ -244,12 +288,12 @@ const UserComponent = () => {
                 <td>{user.email}</td>
               </tr>
             ))}
-          {usersMutation.isLoading && (
+          {usersList.isLoading && (
             <tr>
               <td colSpan={2}>Carregando...</td>
             </tr>
           )}
-          {usersMutation.isError && (
+          {usersList.isError && (
             <tr>
               <td colSpan={2}>Erro ao carregar usuários</td>
             </tr>
