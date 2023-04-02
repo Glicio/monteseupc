@@ -93,30 +93,30 @@ export const chipsets = createTRPCRouter({
   getAll: publicProcedure
     .input(
       z.object({
-        search: z.string().optional(),
+        searchTerm: z.string().optional(),
         skip: z.number().optional(),
         take: z.number().optional(),
       })
     )
     .query(async ({ input }) => {
-      const { search, skip, take } = input;
-      const where = search
+      const { searchTerm, skip, take } = input;
+      const where = searchTerm
         ? {
             OR: [
               {
                 name: {
-                  contains: input.search,
+                  contains: searchTerm,
                 },
               },
               {
                 brand: {
-                  contains: input.search,
+                  contains: searchTerm,
                 },
               },
               {
                 socket: {
                   name: {
-                    contains: input.search,
+                    contains: searchTerm,
                   },
                 },
               },
