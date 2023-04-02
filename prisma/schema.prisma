@@ -97,6 +97,7 @@ model MotherBoard {
   ramType     String
   ramMaxSize  Int
   ramMaxSpeed Int
+  ramChannels Int
   ramEcc      Boolean
   usb2        Int
   usb3        Int
