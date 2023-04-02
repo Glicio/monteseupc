@@ -13,6 +13,7 @@ import { useState } from "react";
 import UserComponent from "./user/usersDashboard";
 import Sockets from "./parts/sockets";
 import Chipsets from "./parts/chipsets";
+import MotherBoard from "./parts/mobo";
 
 const getActiveContent = (name: string) => {
   switch (name) {
@@ -22,6 +23,8 @@ const getActiveContent = (name: string) => {
       return <Sockets />;
     case "Chipsets":
       return <Chipsets />;
+    case "MotherBoards":
+      return <MotherBoard />;
     default:
       return <></>;
   }
@@ -56,7 +59,7 @@ const Dashboard: NextPage = () => {
                 label="Chipsets"
                 onClick={() => setActiveContent("Chipsets")}
               />
-              <SideMenuButton label="Placas Mãe" />
+              <SideMenuButton label="Placas Mãe" onClick={() => setActiveContent("MotherBoards")}/>
               <SideMenuButton label="Processadores" />
               <SideMenuButton label="RAM" />
               <SideMenuButton label="GPU" />
