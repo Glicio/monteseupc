@@ -61,5 +61,26 @@ export const user = createTRPCRouter({
           throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Erro interno do servidor"});
         }
       }),
+      promote: adminProcedure.input(z.object({
+        id: z.string(),
+        role: z.enum(['ADMIN', 'USER', 'MODERATOR'])
+      })).mutation(async ({input}) => {
+        const {id} = input
+        try {
+          const user = await prisma.user.update({
+            where: {
+              id
+            },
+            data: {
+              isAdmin: input.role === 'ADMIN',
+              isMod: input.role === 'MODERATOR',
+            }
+          })
+          return user
+        } catch (error) {
+          throw new TRPCError({code: "INTERNAL_SERVER_ERROR", message: "Erro interno do servidor"});
+        }
+      }
+      ),
   }),
 });
