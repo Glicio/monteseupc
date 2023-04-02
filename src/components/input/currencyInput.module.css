@@ -1,7 +1,7 @@
 .fake-input:focus {
     background-image:none;
   }
-  .fake-input {
+  .real-input:focus ~ .fake-input {
     animation: blink-empty .8s infinite linear;
     background-image: linear-gradient(var(--color-text-primary),var(--color-text-primary));
     /* background-position: 1px  center; */

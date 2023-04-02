@@ -34,7 +34,7 @@ currencyLength?: number;
     <div className="relative h-[1.5rem] flex w-full">
       <input
         type="number"
-        className=" z-10 w-full"
+        className={[" z-10 w-full", styles["real-input"]].join(" ")}
         
         style={{
             backgroundColor: "transparent",
