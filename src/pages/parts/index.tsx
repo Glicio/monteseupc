@@ -19,9 +19,9 @@ const Parts: NextPage = () => {
     <MainLayout>
       <div className="flex justify-center">
         <div className=" flex gap-4 flex-wrap justify-center p-2 max-w-[60rem]">
-          <LinkCard href="/parts/ram" label="Memórias RAM" icon={<RAM/>}/>
           <LinkCard href="/parts/mobo" label="Placas Mãe" icon={<Mobo/>}/>
           <LinkCard href="/parts/cpu" label="Processadores" icon={<CPU/>}/>
+          <LinkCard href="/parts/ram" label="Memórias RAM" icon={<RAM/>}/>
           <LinkCard href="/parts/gpu" label="Placas de Vídeo" icon={<Gpu/>}/>
           <LinkCard href="/parts/psu" label="Fontes de Alim." icon={<Bolt/>}/>
           <LinkCard href="/parts/case" label="Gabinetes" icon={<Gabinete/>}/>
