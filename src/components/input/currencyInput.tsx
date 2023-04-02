@@ -31,10 +31,10 @@ currencyLength?: number;
     }
 
   return (
-    <div className="relative">
+    <div className="relative h-[1.5rem] flex w-full">
       <input
         type="number"
-        className="default-text-input z-10 absolute"
+        className=" z-10 w-full"
         
         style={{
             backgroundColor: "transparent",
@@ -57,7 +57,7 @@ currencyLength?: number;
       />
       <input
         type="text"
-        className={["default-text-input absolute", styles["fake-input"]].join(" ")}
+        className={["default-text-input absolute w-full", styles["fake-input"]].join(" ")}
         style={{
             backgroundPosition: `${(getFormattedValue(value).length-0.5)/2}rem center`,
         }}
