@@ -89,10 +89,10 @@ model MotherBoard {
   id          String  @id @default(cuid())
   name        String
   socketId    String
-  socket      Socket  @relation(fields: [socketId], references: [id])
   brand       String
   price       Int
-  image       String
+  image       String?
+  link        String?
   ramSlots    Int
   ramType     String
   ramMaxSize  Int
@@ -107,9 +107,13 @@ model MotherBoard {
   sata        Int
   m2          Int
   pcieX16     Int
-  pcieX4      Int
+  pciGen      String
   size        String
   chipsetId   String
+  obs         String?
+  launchDate  DateTime?
+  createdAt   DateTime @default(now())
+  socket      Socket  @relation(fields: [socketId], references: [id])
   chipset     Chipset @relation(fields: [chipsetId], references: [id])
 
   @@index([socketId])
