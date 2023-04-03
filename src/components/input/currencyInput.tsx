@@ -62,7 +62,7 @@ currencyLength?: number;
             backgroundPosition: `${(getFormattedValue(value).length-0.5)/2}rem center`,
         }}
         ref={inputRef}
-
+        readOnly
         value={getFormattedValue(value)}
       />
     </div>
