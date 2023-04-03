@@ -96,10 +96,11 @@ export const chipsets = createTRPCRouter({
         searchTerm: z.string().optional(),
         skip: z.number().optional(),
         take: z.number().optional(),
+        socketId: z.string().optional(),
       })
     )
     .query(async ({ input }) => {
-      const { searchTerm, skip, take } = input;
+      const { searchTerm, skip, take, socketId } = input;
       const where = searchTerm
         ? {
             OR: [
@@ -120,9 +121,18 @@ export const chipsets = createTRPCRouter({
                   },
                 },
               },
+              {
+                socket: {
+                  name: {
+                    id: socketId,
+                  },
+                },
+              }
             ],
           }
-        : undefined;
+        : {
+          socketId: socketId
+        };
         const count = await prisma.chipset.count({
             where: where,
             });
