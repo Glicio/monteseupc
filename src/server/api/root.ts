@@ -3,6 +3,7 @@ import { exampleRouter } from "./routers/example";
 import { user } from "./routers/user";
 import { sockets } from "./routers/parts/sockets";
 import { chipsets } from "./routers/parts/chipsets";
+import { motherBoard } from "./routers/parts/motherboards";
 
 /**
  * This is the primary router for your server.
@@ -14,7 +15,8 @@ export const appRouter = createTRPCRouter({
   user: user,
   parts: createTRPCRouter({
     sockets: sockets,
-    chipsets: chipsets
+    chipsets: chipsets,
+    motherBoards: motherBoard
   })
 });
 
