@@ -1,6 +1,5 @@
 import { type GetServerSideProps, type NextPage } from "next";
 import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]";
 import MainLayout from "../../layouts/main";
