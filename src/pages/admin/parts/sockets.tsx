@@ -121,7 +121,7 @@ export default function Sockets() {
 
   const socketQuery = api.parts.sockets.getAll.useQuery(
     {
-      skip: page-1,
+      skip: page - 1,
       searchTerm,
       take: 10,
     },
@@ -165,22 +165,13 @@ export default function Sockets() {
                 }}
                 setSearchTerm={(value) => setSearchTerm(value)}
                 setPage={(value) => setPage(value)}
-
               />
             </th>
           </tr>
           <tr>
             <th>Nome</th>
             <th>
-              <div className="grid grid-cols-3 items-center">
-                <span className="col-start-2">Marca</span>
-                <button
-                  className="col-start-3 ml-auto mr-2 h-4 w-4"
-                  onClick={() => void socketQuery.refetch()}
-                >
-                  <Refresh />
-                </button>
-              </div>
+              <span className="col-start-2">Marca</span>
             </th>
           </tr>
         </thead>
