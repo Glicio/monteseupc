@@ -32,6 +32,15 @@ body{
   outline: none;
 }
 
+.default-date-input{
+  background-color: transparent;
+  border-bottom: 1px solid white;
+  outline: none;
+  color-scheme: dark;
+}
+
+
+
 .primary-button{
   background-color: var(--color-neutral-2);
   color: var(--color-text-primary);
@@ -86,9 +95,10 @@ td {
 .default-select-input{
   background-color: transparent;
   border: 1px solid var(--color-neutral-2);
+  height: 1.6rem;
   border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
+  padding: 0rem .5rem;
+  font-size: .8rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
