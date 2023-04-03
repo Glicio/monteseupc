@@ -230,7 +230,7 @@ const UserComponent = () => {
     );
 
   return (
-    <div className="w-full ">
+    <div className="w-full p-2">
       <div className="header">
         <h1 className="text-2xl">Usuários</h1>
         <span className="text-sm text-[var(--color-neutral-2)]">
