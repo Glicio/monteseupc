@@ -96,4 +96,13 @@ export const sockets = createTRPCRouter({
       return {sockets, count, pages: Math.ceil(count / (take || 1))};
 
   }),
+  getOne: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const socket = await prisma.socket.findUnique({
+      where: {
+        id: input.id,
+      },
+    });
+    return socket;
+  }
+  ),
 });
