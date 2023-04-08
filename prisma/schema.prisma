@@ -57,6 +57,9 @@ model User {
   //motherboards created by user
   mobosCreated MotherBoard[] @relation("mobosCreated")
   mobosUpdated MotherBoard[] @relation("mobosUpdated")
+  //cpus created by user
+  cpusCreated CPU[] @relation("cpusCreated")
+  cpusUpdated CPU[] @relation("cpusUpdated")
 
   accounts Account[]
   sessions Session[]
@@ -128,16 +131,16 @@ model MotherBoard {
 
   @@index([createdById])
   @@index([socketId])
-  @@index([chipsetId])
   @@index([updatedById])
+  @@index([chipsetId])
 }
 
 model CPU {
   id            String   @id @default(cuid())
   name          String
   image         String
+  link          String?
   socketId      String
-  socket        Socket   @relation(fields: [socketId], references: [id])
   brand         String
   generation    Int
   price         Int
@@ -149,8 +152,21 @@ model CPU {
   cache1        Int
   cache2        Int
   cache3        Int
-  launchDate    DateTime
+  launchDate    String
   integratedGpu Boolean
+  obs           String?
 
+  createdById String?
+  updatedById String?
+  chipsetId   String
+
+  createdAt   DateTime  @default(now())
+  createdBy   User?     @relation(fields: [createdById], references: [id], name: "cpusCreated")
+  updatedBy   User?     @relation(fields: [updatedById], references: [id], name: "cpusUpdated")
+  socket      Socket    @relation(fields: [socketId], references: [id])
+
+  @@index([createdById])
   @@index([socketId])
+  @@index([updatedById])
+  @@index([chipsetId])
 }
