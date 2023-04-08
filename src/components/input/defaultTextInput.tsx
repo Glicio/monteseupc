@@ -15,7 +15,7 @@ export default function DefaultTextInput({
 }) {
   return (
     <div className="form-item flex flex-col">
-      <label className="form-label">{title}</label>
+      <label className="form-label text-sm font-bold">{title}</label>
       <input
         className="default-text-input"
         type="text"

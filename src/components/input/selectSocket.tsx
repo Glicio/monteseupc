@@ -9,7 +9,7 @@ export default function SelectSocket({value, setValue, required}: {value: string
 
 
         <div className='w-full flex flex-col'>
-            <label htmlFor="socket">Socket</label>
+            <label htmlFor="socket" className='text-sm font-bold'>Socket</label>
             <select required={required || false} name="socket" id="socket" className='default-select-input' value={value} onChange={(e) => setValue(e.target.value)}>
                 <option value="">Selecione um socket</option>
                 {sockets.data?.sockets?.map(socket => (
