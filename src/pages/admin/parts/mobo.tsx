@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import BackButton from "../../../components/navigation/backButton";
 import { api } from "../../../utils/api";
-import { type MotherBoard } from "@prisma/client";
+import { type User, type MotherBoard } from "@prisma/client";
 import CurrencyInput from "../../../components/input/currencyInput";
 import DefaultTextInput from "../../../components/input/defaultTextInput";
 import DefaultNumberInput from "../../../components/input/defaultNumberInput";
@@ -11,9 +11,19 @@ import SelectSocket from "../../../components/input/selectSocket";
 import { AppContext } from "../../../components/context/AppContext";
 import TableSearchForm from "../../../components/input/tableSearchForm";
 
-type MoboActions = keyof MotherBoard;
+interface Mobo
+  extends Omit<
+    MotherBoard,
+    "createdAt" | "updatedAt" | "createdById" | "updatedById"
+  > {
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+  createdBy?: User | null;
+  updatedBy?: User | null;
+}
+type MoboActions = keyof Mobo;
 
-const motherBoardInitialState: MotherBoard = {
+const motherBoardInitialState: Mobo = {
   id: "",
   name: "",
   socketId: "",
@@ -38,15 +48,17 @@ const motherBoardInitialState: MotherBoard = {
   pciGen: "",
   size: "ATX",
   chipsetId: "",
-  createdAt: new Date(),
   launchDate: null,
   obs: "",
 };
 
 const moboReducer = (
-  state: MotherBoard,
-  action: { type: MoboActions; payload: string | number | boolean | undefined | null | Date }
-): MotherBoard => {
+  state: Mobo,
+  action: {
+    type: MoboActions;
+    payload: string | number | boolean | undefined | null | Date;
+  }
+): Mobo => {
   return {
     ...state,
     [action.type]: action.payload,
@@ -57,22 +69,22 @@ const MotherBoarForm = ({
   back,
   moboToEdit,
 }: {
-  back: () => void;
+  back: (refetch: boolean) => void;
   moboToEdit?: MotherBoard;
 }) => {
-  
-  const {toast} = useContext(AppContext)
+  const { toast } = useContext(AppContext);
 
-  const createOrUpdate = api.parts.motherBoards.admin.createOrUpdate.useMutation({
-    onSuccess: () => {
-      toast.success("Placa mãe salva com sucesso!")
-      back();
-    },
-    onError: (err) => {
-      toast.error("Erro ao salvar placa mãe!")
-      console.error(err)
-    }
-  })
+  const createOrUpdate =
+    api.parts.motherBoards.admin.createOrUpdate.useMutation({
+      onSuccess: () => {
+        toast.success("Placa mãe salva com sucesso!");
+        back(true);
+      },
+      onError: (err) => {
+        toast.error("Erro ao salvar placa mãe!");
+        console.error(err);
+      },
+    });
 
   const [mobo, dispatch] = React.useReducer(
     moboReducer,
@@ -81,7 +93,7 @@ const MotherBoarForm = ({
 
   return (
     <div className="w-full p-2 pb-4">
-      <BackButton onClick={back} />
+      <BackButton onClick={() => back(false)} />
       <form
         className="mx-auto flex w-[25rem] flex-col gap-2"
         onSubmit={(e) => {
@@ -92,6 +104,30 @@ const MotherBoarForm = ({
           e.preventDefault();
         }}
       >
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-bold">{moboToEdit ? "Editar" : "Cadastrar"} Placa Mãe</h1>
+          {mobo.id && (
+            <span className="text-sm text-[var(--color-neutral-2)]">
+              ID: {mobo.id}
+            </span>
+          )}
+          {mobo.createdAt && (
+            <span className="text-sm text-[var(--color-neutral-2)]">
+              Criado em: {mobo.createdAt.toLocaleDateString()}
+              {mobo.createdBy && (
+                <span> por {mobo.createdBy.name || "N/I"}</span>
+              )}
+            </span>
+          )}
+          {mobo.updatedAt && (
+            <span className="text-sm text-[var(--color-neutral-2)]">
+              Ultima atualização em: {mobo.updatedAt.toLocaleDateString()}
+              {mobo.updatedBy && (
+                <span> por {mobo.updatedBy.name || "N/I"}</span>
+              )}
+            </span>
+          )}
+        </div>
         <DefaultTextInput
           required
           title="Nome"
@@ -302,22 +338,30 @@ const MotherBoarForm = ({
               name="releaseDate"
               className="default-date-input"
               id="releaseDate"
-              value={mobo.launchDate?.toISOString().split("T")[0] || "00/00/0000"}
+              value={
+                mobo.launchDate?.toISOString().split("T")[0] || "00/00/0000"
+              }
               onChange={(e) => {
                 dispatch({ type: "launchDate", payload: e.target.valueAsDate });
               }}
             />
-
           </div>
         </div>
         <div className="form-item flex flex-col">
           <label htmlFor="wifi">Observações</label>
-          <textarea name="obs" id="obs" className="default-text-input border p-1" value={mobo.obs || ""} onChange={(e) => {
-            dispatch({ type: "obs", payload: e.target.value });
-          }}></textarea>
-
+          <textarea
+            name="obs"
+            id="obs"
+            className="default-text-input border p-1"
+            value={mobo.obs || ""}
+            onChange={(e) => {
+              dispatch({ type: "obs", payload: e.target.value });
+            }}
+          ></textarea>
         </div>
-        <button type="submit" className="primary-button">Salvar</button>
+        <button type="submit" className="primary-button">
+          Salvar
+        </button>
       </form>
     </div>
   );
@@ -325,20 +369,40 @@ const MotherBoarForm = ({
 
 export default function MotherBoard() {
   const [createMode, setCreateMode] = React.useState(false);
-  const [currentMobo, setCurrentMobo] = React.useState<MotherBoard | null>(null);
+  const [currentMobo, setCurrentMobo] = React.useState<MotherBoard | null>(
+    null
+  );
   const [page, setPage] = React.useState(1);
   const [searchTerm, setSearchTerm] = React.useState("");
 
-  const mobos = api.parts.motherBoards.getAll.useQuery({
-    skip: page-1,
-    searchTerm: searchTerm,
-  }, { refetchOnWindowFocus: false })
+  const mobos = api.parts.motherBoards.getAll.useQuery(
+    {
+      skip: page - 1,
+      searchTerm: searchTerm,
+      take: 10,
+    },
+    { refetchOnWindowFocus: false,
+    
+    }
+  );
+
+  React.useEffect(() => {
+    if(currentMobo === null) return void mobos.refetch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[currentMobo])
+
 
   if (createMode || currentMobo) {
-    return <MotherBoarForm back={() => {
-      setCreateMode(false)
-      setCurrentMobo(null)
-    }} moboToEdit={currentMobo || undefined} />;
+    return (
+      <MotherBoarForm
+        back={(refetch) => {
+          setCreateMode(false);
+          setCurrentMobo(null);
+          if(refetch) void mobos.refetch();
+        }}
+        moboToEdit={currentMobo || undefined}
+      />
+    );
   }
 
 
@@ -348,7 +412,9 @@ export default function MotherBoard() {
       <div className="header">
         <h1 className="text-2xl">Placas Mãe</h1>
         <span className="text-sm text-[var(--color-neutral-2)]">
-          {mobos.data?.count ? `${mobos.data.count} placas encontradas` : "Carregando..."}
+          {mobos.data?.count
+            ? `${mobos.data.count} placas encontradas`
+            : "Carregando..."}
         </span>
       </div>
       <button className="primary-button" onClick={() => setCreateMode(true)}>
@@ -357,13 +423,16 @@ export default function MotherBoard() {
       <table className="default-table mt-4">
         <thead>
           <tr>
-            <th colSpan={3}><TableSearchForm numberOfPages={mobos.data?.count || 1}
-            page={page}
-            setPage={(value) => setPage(value)}
-            refresh={() => void mobos.refetch()}
-            setSearchTerm={(value) => setSearchTerm(value)}
-            searchTerm={searchTerm}
-            /></th>
+            <th colSpan={3}>
+              <TableSearchForm
+                numberOfPages={mobos.data?.pages || 1}
+                page={page}
+                setPage={(value) => setPage(value)}
+                refresh={() => void mobos.refetch()}
+                setSearchTerm={(value) => setSearchTerm(value)}
+                searchTerm={searchTerm}
+              />
+            </th>
           </tr>
           <tr>
             <th>Nome</th>
@@ -374,27 +443,30 @@ export default function MotherBoard() {
         <tbody>
           {mobos.data?.motherboards?.map((mobo) => (
             <tr key={mobo.id}>
-              <td><button className="secondary-button" onClick={() => {setCurrentMobo(mobo)}}>{mobo.name}</button></td>
+              <td>
+                <button
+                  className="secondary-button"
+                  onClick={() => {
+                    setCurrentMobo(mobo);
+                  }}
+                >
+                  {mobo.name}
+                </button>
+              </td>
               <td>{mobo.socket.name}</td>
               <td>{mobo.brand}</td>
             </tr>
           ))}
-          {
-            mobos.isSuccess && mobos.data?.motherboards?.length === 0 && (
-              <tr>
-                <td colSpan={3}>Nenhum resultado encontrado</td>
-              </tr>
-            )
-          }
-          {
-            mobos.isLoading && (
-              <tr>
-                <td colSpan={3}>Carregando...</td>
-              </tr>
-            )
-          }
-
-
+          {mobos.isSuccess && mobos.data?.motherboards?.length === 0 && (
+            <tr>
+              <td colSpan={3}>Nenhum resultado encontrado</td>
+            </tr>
+          )}
+          {mobos.isLoading && (
+            <tr>
+              <td colSpan={3}>Carregando...</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

@@ -37,7 +37,7 @@ export const motherBoard = createTRPCRouter({
           }),
         })
       )
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const { id, data } = input;
 
         const updateData = {
@@ -73,20 +73,35 @@ export const motherBoard = createTRPCRouter({
             pciGen: data.pciGen,
             size: data.size,
             launchDate: data.launchDate || undefined,
-            obs: data.obs || undefined,
+            obs: data.obs || "",
         }
         if (id) {
             const motherboard = await prisma.motherBoard.update({
                 where: {
                     id,
                 },
-                data: updateData
+                data: {
+                    ...updateData,
+                    updatedAt: new Date(),
+                    updatedBy: {
+                        connect: {
+                            id: ctx.session.user.id,
+                        }
+                    }
+                }
             })
             return motherboard
         }
 
         const motherboard = await prisma.motherBoard.create({
-            data: updateData
+            data: {
+                ...updateData,
+                createdBy:{
+                    connect: {
+                        id: ctx.session.user.id,
+                    }
+                }
+            }
         })
         return motherboard
       }),
@@ -94,14 +109,14 @@ export const motherBoard = createTRPCRouter({
   }),
   getAll: publicProcedure.input(z.object({
         skip: z.number().optional(),
-        limit: z.number().optional(),
+        take: z.number().optional(),
         orderBy: z.enum(["name", "brand", "price"]).optional(),
         socketId: z.string().optional(),
         chipsetId: z.string().optional(),
         order: z.string().optional(),
         searchTerm: z.string().optional(),
-  })).query(async ({ input }) => {
-    const { skip, limit, orderBy, order, searchTerm } = input
+  })).query(async ({ input, ctx }) => {
+    const { skip, take, orderBy, order, searchTerm } = input
 
     const where = {
         OR: searchTerm ? [
@@ -134,14 +149,27 @@ export const motherBoard = createTRPCRouter({
       include: {
         socket: true,
         chipset: true,
+        //só inclui se o usuário for admin
+        createdBy: {
+            select: {
+                name: !!ctx.session?.user?.isAdmin,
+            }
+        },
+        updatedBy: {
+            select: {
+                name: !!ctx.session?.user?.isAdmin,
+            }
+        }
+        
       },
-        take: limit || undefined,
+        take: take || undefined,
         skip: skip || undefined,
         orderBy: orderBy ? {
             [orderBy]: order || "asc"
         } : undefined
 
     });
-    return {motherboards, count, pages: Math.ceil(count / (limit || 1))};
+
+    return {motherboards, count, pages: Math.ceil(count / (take || 1))};
   }),
 });

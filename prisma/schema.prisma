@@ -53,8 +53,13 @@ model User {
   isMutted      Boolean   @default(false)
   createdAt     DateTime  @default(now())
   lastLogin     DateTime  @default(now())
-  accounts      Account[]
-  sessions      Session[]
+
+  //motherboards created by user
+  mobosCreated MotherBoard[] @relation("mobosCreated")
+  mobosUpdated MotherBoard[] @relation("mobosUpdated")
+
+  accounts Account[]
+  sessions Session[]
 }
 
 model VerificationToken {
@@ -86,7 +91,7 @@ model Chipset {
 }
 
 model MotherBoard {
-  id          String  @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
   socketId    String
   brand       String
@@ -112,12 +117,19 @@ model MotherBoard {
   chipsetId   String
   obs         String?
   launchDate  DateTime?
-  createdAt   DateTime @default(now())
-  socket      Socket  @relation(fields: [socketId], references: [id])
-  chipset     Chipset @relation(fields: [chipsetId], references: [id])
+  createdAt   DateTime  @default(now())
+  createdById String?
+  updatedAt   DateTime? @updatedAt
+  updatedById String?
+  createdBy   User?     @relation(fields: [createdById], references: [id], name: "mobosCreated")
+  updatedBy   User?     @relation(fields: [updatedById], references: [id], name: "mobosUpdated")
+  socket      Socket    @relation(fields: [socketId], references: [id])
+  chipset     Chipset   @relation(fields: [chipsetId], references: [id])
 
+  @@index([createdById])
   @@index([socketId])
   @@index([chipsetId])
+  @@index([updatedById])
 }
 
 model CPU {
