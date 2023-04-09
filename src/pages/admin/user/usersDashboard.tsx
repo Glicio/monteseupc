@@ -71,7 +71,7 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
   });
 
   return (
-    <div>
+    <div className="p-2">
       <BackButton onClick={() => back()} />
       {/* Confirmar que quer dar/tirar direitos de admin */}
       <ConfirmDialog
@@ -115,7 +115,7 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
         }
         title={user.isBanned ? "Desbanir Usuário?" : "Banir Usuário?"}
       />
-      <div className="mx-auto w-[25rem]">
+      <div className="mx-auto w-[25rem] flex flex-col gap-2">
         <div className="pfp mx-auto h-24 w-24 overflow-hidden rounded-full">
           {user.image ? (
             <Image
@@ -154,7 +154,7 @@ const UserController = ({ user, back }: { user: User; back: () => void }) => {
           <button className="primary-button">Silenciar</button>
         </div>
         <table
-          className={["default-table mt-2", style.userInfoTable].join(" ")}
+          className={["default-table ", style.userInfoTable].join(" ")}
         >
           <tbody>
             <tr>
