@@ -7,6 +7,7 @@ import DefaultNumberInput from "../../../components/input/defaultNumberInput";
 import CurrencyInput from "../../../components/input/currencyInput";
 import { api } from "../../../utils/api";
 import { AppContext } from "../../../components/context/AppContext";
+import TableSearchForm from "../../../components/input/tableSearchForm";
 
 interface CPUFormState
     extends Omit<
@@ -329,7 +330,7 @@ export default function CPU() {
             refetchOnWindowFocus: false,
         }
     );
-    if (createMode || currentCPU ) {
+    if (createMode || currentCPU) {
         return <CPUForm cpuToEdit={currentCPU} back={() => back()} />;
     }
     return (
@@ -349,6 +350,18 @@ export default function CPU() {
             <table className="default-table mt-4">
                 <thead>
                     <tr>
+                        <td colSpan={3}>
+                            <TableSearchForm
+                                searchTerm={searchTerm}
+                                setSearchTerm={setSearchTerm}
+                                page={page}
+                                setPage={(value) => setPage(value)}
+                                numberOfPages={cpus.data?.count || 0}
+                                refresh={() => void cpus.refetch()}
+                            />
+                        </td>
+                    </tr>
+                    <tr>
                         <th>Modelo</th>
                         <th>Socket</th>
                         <th>Marca</th>
@@ -360,7 +373,14 @@ export default function CPU() {
                             return (
                                 <tr key={cpu.id}>
                                     <td>
-                                        <button onClick={() => {setCurrentCPU(cpu)}} className={"secondary-button"}>{cpu.name}</button>
+                                        <button
+                                            onClick={() => {
+                                                setCurrentCPU(cpu);
+                                            }}
+                                            className={"secondary-button"}
+                                        >
+                                            {cpu.name}
+                                        </button>
                                     </td>
                                     <td>{cpu.socket.name}</td>
                                     <td>{cpu.brand}</td>
