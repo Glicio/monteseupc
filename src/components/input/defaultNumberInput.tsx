@@ -32,7 +32,8 @@ export default function DefaultNumberInput({
             event.key !== "ArrowRight" &&
             event.key !== "ArrowUp" &&
             event.key !== "ArrowDown" &&
-            event.key !== "Delete"
+            event.key !== "Delete" &&
+            event.key !== "Tab"
           ) {
             event.preventDefault();
           }
