@@ -115,7 +115,7 @@ export default function SelectSocket({
         placeholder="Ex: LGA 1151"
       />
       {sockets.data?.sockets && sockets.data?.sockets?.length > 0 && active && (
-        <div className="absolute top-[100%] z-10 flex w-full flex-col gap-2 border bg-[var(--color-neutral-1)] p-2">
+        <div className="absolute top-[100%] z-30 flex w-full flex-col gap-2 border bg-[var(--color-neutral-1)] p-2">
           {sockets.data?.sockets?.map((socket) => {
             return (
               <button
