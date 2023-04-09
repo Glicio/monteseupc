@@ -140,7 +140,6 @@ model CPU {
   name          String
   image         String
   link          String?
-  socketId      String
   brand         String
   generation    Int
   price         Int
@@ -158,15 +157,14 @@ model CPU {
 
   createdById String?
   updatedById String?
-  chipsetId   String
+  socketId      String
 
   createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
   createdBy   User?     @relation(fields: [createdById], references: [id], name: "cpusCreated")
   updatedBy   User?     @relation(fields: [updatedById], references: [id], name: "cpusUpdated")
   socket      Socket    @relation(fields: [socketId], references: [id])
-
-  @@index([createdById])
   @@index([socketId])
+  @@index([createdById])
   @@index([updatedById])
-  @@index([chipsetId])
 }
