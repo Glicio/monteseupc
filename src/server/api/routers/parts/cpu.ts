@@ -99,6 +99,23 @@ export const cpu = createTRPCRouter({
                 });
                 return cpu;
             }),
+        delete: adminProcedure
+        .input(
+            z.object({
+                id: z.string(),
+            })
+        )
+        .mutation(async ({ input }) => {
+
+            const cpu = await prisma.cPU.delete({
+                where: {
+                    id: input.id,
+                },
+            });
+
+            return cpu;
+        }
+                 ),
     }),
     getAll: publicProcedure
         .input(
@@ -108,7 +125,7 @@ export const cpu = createTRPCRouter({
                 skip: z.number().optional(),
             })
         )
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
             const { searchTerm, take, skip } = input;
 
             const where = searchTerm
@@ -136,6 +153,8 @@ export const cpu = createTRPCRouter({
                 skip: skip || 0,
                 include: {
                     socket: true,
+                    updatedBy: ctx.session?.user?.isAdmin || false,
+                    createdBy: ctx.session?.user?.isAdmin || false,
                 },
             });
 
