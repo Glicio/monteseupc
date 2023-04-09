@@ -14,12 +14,10 @@ export default function CurrencyInput({
   value,
   setValue,
   locale,
-  currencyLength,
 }: {
   value: number;
   setValue: (value: number) => void;
   locale?: string;
-currencyLength?: number;
 }) {
 
     const [input, setInput] = React.useState(value ? String(value) : "")
@@ -42,9 +40,10 @@ currencyLength?: number;
             
         }}
         onKeyDown={(e) => {
-            if(e.key === "." || e.key === ",") e.preventDefault();
+            if(e.key === "." || e.key === "," || e.key === "Control" ) e.preventDefault();
         }}
         value={input}
+        tabIndex={-1}
         onChange={(e) => {
             if(/\D/g.test(e.target.value)) return;
             const value = e.target.value
