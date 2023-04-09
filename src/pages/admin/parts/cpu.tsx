@@ -68,10 +68,21 @@ const CPUForm = ({
     const createMutation = api.parts.cpu.admin.create.useMutation({
         onSuccess: () => {
             toast.success("Processador cadastrado com sucesso!");
+            back()
         },
         onError: (err) => {
             toast.error("Erro ao cadastrar processador!");
             console.error(err);
+        },
+    });
+    const updateMutation = api.parts.cpu.admin.update.useMutation({
+        onSuccess: () => {
+            toast.success("Atualizado com sucesso!");
+            back();
+        },
+        onError: (err) => {
+            console.error(err);
+            toast.error("Erro ao atualizar");
         },
     });
 
@@ -82,14 +93,20 @@ const CPUForm = ({
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
-                        if (cpuToEdit === null) {
-                            createMutation.mutate({
-                                data: {
-                                    ...cpu,
-                                    obs: cpu.obs || undefined,
+                        if (cpuToEdit && cpuToEdit.id) {
+                            return updateMutation.mutate({
+                                data: { ...cpu,
+                                id: cpuToEdit.id,
+                                obs: cpu.obs || undefined,
                                 },
                             });
                         }
+                        return createMutation.mutate({
+                            data: {
+                                ...cpu,
+                                obs: cpu.obs || undefined,
+                            },
+                        });
                     }}
                     className="flex flex-col gap-2"
                 >
@@ -320,6 +337,7 @@ export default function CPU() {
     const back = () => {
         setCreateMode(false);
         setCurrentCPU(null);
+        void cpus.refetch();
     };
 
     const cpus = api.parts.cpu.getAll.useQuery(
@@ -338,7 +356,9 @@ export default function CPU() {
             <div className="header">
                 <h1 className="text-2xl">Processadores</h1>
                 <span className="text-sm text-[var(--color-neutral-2)]">
-                    {"Carregando..."}
+                    {cpus.data?.count
+                        ? `${cpus.data.count} processadores encontrados`
+                        : "Carregando..."}
                 </span>
             </div>
             <button
@@ -367,28 +387,36 @@ export default function CPU() {
                         <th>Marca</th>
                     </tr>
                 </thead>
-                {cpus.data?.cpus && cpus.data?.cpus?.length > 0 ? (
-                    <tbody>
-                        {cpus.data?.cpus?.map((cpu) => {
-                            return (
-                                <tr key={cpu.id}>
-                                    <td>
-                                        <button
-                                            onClick={() => {
-                                                setCurrentCPU(cpu);
-                                            }}
-                                            className={"secondary-button"}
-                                        >
-                                            {cpu.name}
-                                        </button>
-                                    </td>
-                                    <td>{cpu.socket.name}</td>
-                                    <td>{cpu.brand}</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                ) : null}
+                <tbody>
+                    {cpus.isLoading ? (
+                        <tr>
+                            <td colSpan={3}>Carregando...</td>
+                        </tr>
+                    ) : null}
+                    {cpus.isError ? (
+                        <tr>
+                            <td colSpan={3}>Erro ao carregar</td>
+                        </tr>
+                    ) : null}
+                    {cpus.data?.cpus?.map((cpu) => {
+                        return (
+                            <tr key={cpu.id}>
+                                <td>
+                                    <button
+                                        onClick={() => {
+                                            setCurrentCPU(cpu);
+                                        }}
+                                        className={"secondary-button"}
+                                    >
+                                        {cpu.name}
+                                    </button>
+                                </td>
+                                <td>{cpu.socket.name}</td>
+                                <td>{cpu.brand}</td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
             </table>
         </div>
     );
