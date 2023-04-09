@@ -70,7 +70,7 @@ export const cpu = createTRPCRouter({
                         cache3: z.number(),
                         launchDate: z.string(),
                         integratedGpu: z.boolean(),
-                        obs: z.string(),
+                        obs: z.string().optional(),
                     }),
                 })
             )
