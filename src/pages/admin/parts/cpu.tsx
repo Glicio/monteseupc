@@ -1,4 +1,4 @@
-import { type CPU } from "@prisma/client";
+import { User, type CPU } from "@prisma/client";
 import React from "react";
 import DefaultTextInput from "../../../components/input/defaultTextInput";
 import BackButton from "../../../components/navigation/backButton";
@@ -8,13 +8,22 @@ import CurrencyInput from "../../../components/input/currencyInput";
 import { api } from "../../../utils/api";
 import { AppContext } from "../../../components/context/AppContext";
 import TableSearchForm from "../../../components/input/tableSearchForm";
+import ConfirmDialog from "../../../components/input/confirmDialog";
 
 interface CPUFormState
     extends Omit<
         CPU,
-        "id" | "createdAt" | "createdById" | "updatedById" | "updatedAt"
+        "id" | "createdAt" | "createdById" | "updatedById" | "updatedAt" | "approved" | "approvedById" | "approvedAt" | "approvedById"
     > {
     id: string | null;
+    createdAt?: Date | null,
+    createdBy?: User | null,
+    updatedAt?: Date | null,
+    updatedBy?: User | null,
+    approved?: boolean | null,
+    approvedAt?: Date | null,
+    approvedBy?: User | null,
+
 }
 
 type CPUReducerAction = keyof CPUFormState | "reset";
@@ -55,20 +64,21 @@ const CPUForm = ({
     cpuToEdit,
     back,
 }: {
-    cpuToEdit: CPU | null;
+    cpuToEdit: CPUFormState | null;
     back: () => void;
 }) => {
     const [cpu, cpuDispatcher] = React.useReducer(
         cpuFormReducer,
         cpuToEdit ?? CPUFormInitialState
     );
+    const [confirmDelete, setConfirmDelete] = React.useState(false);
 
     const { toast } = React.useContext(AppContext);
 
     const createMutation = api.parts.cpu.admin.create.useMutation({
         onSuccess: () => {
             toast.success("Processador cadastrado com sucesso!");
-            back()
+            back();
         },
         onError: (err) => {
             toast.error("Erro ao cadastrar processador!");
@@ -86,18 +96,43 @@ const CPUForm = ({
         },
     });
 
+    const deleteMutation = api.parts.cpu.admin.delete.useMutation({
+        onSuccess: () => {
+            toast.success("Deletado com sucesso!");
+            back();
+        },
+        onError: (err) => {
+            console.error(err);
+            toast.error("Erro ao excluir processador");
+        },
+    });
+
     return (
         <div className="p-2">
             <BackButton onClick={() => back()} />
+            <ConfirmDialog
+                onConfirm={() => {
+                    if (!cpuToEdit?.id) return;
+                    deleteMutation.mutate({ id: cpuToEdit?.id });
+                }}
+                open={confirmDelete}
+                onClose={() => {
+                    setConfirmDelete(false);
+                }}
+                title="Deletar Processador?"
+                confirmText={cpuToEdit?.name || "CPU"}
+            />
+
             <div className="mx-auto w-[25rem]">
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (cpuToEdit && cpuToEdit.id) {
                             return updateMutation.mutate({
-                                data: { ...cpu,
-                                id: cpuToEdit.id,
-                                obs: cpu.obs || undefined,
+                                data: {
+                                    ...cpu,
+                                    id: cpuToEdit.id,
+                                    obs: cpu.obs || undefined,
                                 },
                             });
                         }
@@ -114,6 +149,38 @@ const CPUForm = ({
                         {cpuToEdit ? "Editar" : "Cadastrar"} Processador
                     </h1>
 
+          {cpuToEdit?.id && (
+            <span className="text-sm text-[var(--color-neutral-2)]">
+              ID: {cpuToEdit.id} {" "} Aprovado: {cpuToEdit.approved ? "Sim" : "Não"}
+            </span>
+          )}
+          {cpuToEdit?.createdAt && (
+            <span className="text-sm text-[var(--color-neutral-2)]">
+              Criado em: {cpuToEdit.createdAt.toLocaleDateString()}
+              {cpuToEdit?.createdBy && (
+                <span> por {cpuToEdit.createdBy.name || "N/I"}</span>
+              )}
+            </span>
+          )}
+          {cpuToEdit?.updatedAt && (
+            <span className="text-sm text-[var(--color-neutral-2)]">
+              Ultima atualização em: {cpuToEdit.updatedAt.toLocaleDateString()}
+              {cpuToEdit?.updatedBy && (
+                <span> por {cpuToEdit.updatedBy.name || "N/I"}</span>
+              )}
+            </span>
+          )}
+                    {cpuToEdit && (
+                        <button
+                            type="button"
+                            className="primary-button w-[10rem]"
+                            onClick={() => {
+                                setConfirmDelete(true);
+                            }}
+                        >
+                            Deletar
+                        </button>
+                    )}
                     <DefaultTextInput
                         value={cpu.name}
                         placeholder="Ex: i7-9700K"

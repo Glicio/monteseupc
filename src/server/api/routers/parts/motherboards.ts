@@ -96,6 +96,13 @@ export const motherBoard = createTRPCRouter({
         const motherboard = await prisma.motherBoard.create({
             data: {
                 ...updateData,
+                approved: true,
+                approvedBy: {
+                    connect: {
+                        id: ctx.session.user.id,
+                    }
+                },
+                approvedAt: new Date(),
                 createdBy:{
                     connect: {
                         id: ctx.session.user.id,
@@ -110,13 +117,13 @@ export const motherBoard = createTRPCRouter({
   getAll: publicProcedure.input(z.object({
         skip: z.number().optional(),
         take: z.number().optional(),
-        orderBy: z.enum(["name", "brand", "price"]).optional(),
+        sortBy: z.enum(["name", "brand", "price"]).optional(),
         socketId: z.string().optional(),
         chipsetId: z.string().optional(),
         order: z.string().optional(),
         searchTerm: z.string().optional(),
   })).query(async ({ input, ctx }) => {
-    const { skip, take, orderBy, order, searchTerm } = input
+    const { skip, take, sortBy, order, searchTerm } = input
 
     const where = {
         OR: searchTerm ? [
@@ -164,8 +171,8 @@ export const motherBoard = createTRPCRouter({
       },
         take: take || undefined,
         skip: skip || undefined,
-        orderBy: orderBy ? {
-            [orderBy]: order || "asc"
+        orderBy:  sortBy ? {
+            [sortBy]: order || "asc"
         } : undefined
 
     });

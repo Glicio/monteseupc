@@ -34,6 +34,13 @@ export const cpu = createTRPCRouter({
                     data: {
                         ...data,
                         obs: data.obs || null,
+                        approved: true,
+                        approvedBy: {
+                            connect: {
+                                id: ctx.session.user.id,
+                            },
+                        },
+                        approvedAt: new Date(),
                         socket: {
                             connect: {
                                 id: socketId,
@@ -44,6 +51,8 @@ export const cpu = createTRPCRouter({
                                 id: ctx.session.user.id,
                             },
                         },
+                        
+
                     },
                 });
 
@@ -121,12 +130,14 @@ export const cpu = createTRPCRouter({
         .input(
             z.object({
                 searchTerm: z.string().optional(),
+                approved: z.boolean().optional(),
+                sort: z.enum(["createdAt","name","price","approvedAt"]).optional(),
                 take: z.number().optional(),
                 skip: z.number().optional(),
             })
         )
         .query(async ({ input, ctx }) => {
-            const { searchTerm, take, skip } = input;
+            const { searchTerm, take, skip, approved, sort } = input;
 
             const where = searchTerm
                 ? {
@@ -142,8 +153,11 @@ export const cpu = createTRPCRouter({
                               },
                           },
                       ],
+                      approved: approved || undefined,
                   }
-                : undefined;
+                : {
+                approved: approved || undefined,
+                }
             const count = await prisma.cPU.count({
                 where,
             });
@@ -156,6 +170,9 @@ export const cpu = createTRPCRouter({
                     updatedBy: ctx.session?.user?.isAdmin || false,
                     createdBy: ctx.session?.user?.isAdmin || false,
                 },
+                orderBy: {
+                    [sort || "createdAt"]: "desc",
+                }
             });
 
             return {

@@ -14,7 +14,7 @@ import TableSearchForm from "../../../components/input/tableSearchForm";
 interface Mobo
   extends Omit<
     MotherBoard,
-    "createdAt" | "updatedAt" | "createdById" | "updatedById"
+    "createdAt" | "updatedAt" | "createdById" | "updatedById" | "approved" | "approvedAt" | "approvedById"
   > {
   createdAt?: Date | null;
   updatedAt?: Date | null;
