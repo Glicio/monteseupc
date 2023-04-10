@@ -10,6 +10,7 @@ import SelectChipset from "../../../components/input/selectChipset";
 import SelectSocket from "../../../components/input/selectSocket";
 import { AppContext } from "../../../components/context/AppContext";
 import TableSearchForm from "../../../components/input/tableSearchForm";
+import ConfirmDialog from "../../../components/input/confirmDialog";
 
 interface Mobo
   extends Omit<
@@ -73,7 +74,7 @@ const MotherBoarForm = ({
   moboToEdit?: MotherBoard;
 }) => {
   const { toast } = useContext(AppContext);
-
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
   const createOrUpdate =
     api.parts.motherBoards.admin.createOrUpdate.useMutation({
       onSuccess: () => {
@@ -86,6 +87,17 @@ const MotherBoarForm = ({
       },
     });
 
+    const deleteMutation = api.parts.motherBoards.admin.delete.useMutation({
+        onSuccess: () => {
+            toast.success("Placa mãe deletada com sucesso!")
+            back(true)
+        },
+        onError: (err) => {
+            console.error(err)
+            toast.error("Erro ao deletar placa mãe!")
+        }
+    })
+ 
   const [mobo, dispatch] = React.useReducer(
     moboReducer,
     moboToEdit || motherBoardInitialState
@@ -94,6 +106,12 @@ const MotherBoarForm = ({
   return (
     <div className="w-full p-2 pb-4">
       <BackButton onClick={() => back(false)} />
+      <ConfirmDialog open={confirmDelete} onClose={() => {setConfirmDelete(false)}} onConfirm={() => {
+      if(moboToEdit?.id) {
+      deleteMutation.mutate({id: moboToEdit.id})
+      }
+
+      }} title="Deletar placa mãe?" confirmText={moboToEdit?.name || "DELETAR"}/>
       <form
         className="mx-auto flex w-[25rem] flex-col gap-2"
         onSubmit={(e) => {
@@ -128,6 +146,9 @@ const MotherBoarForm = ({
             </span>
           )}
         </div>
+        <button type="button" className="w-[8rem] primary-button" onClick={() => setConfirmDelete(true)}>
+            Deletar
+        </button>
         <DefaultTextInput
           required
           title="Nome"

@@ -4,6 +4,7 @@ import {prisma } from "../../../db"
 
 export const motherBoard = createTRPCRouter({
   admin: createTRPCRouter({
+      //TODO: split this into two procedures
     createOrUpdate: adminProcedure
       .input(
         z.object({
@@ -112,6 +113,18 @@ export const motherBoard = createTRPCRouter({
         })
         return motherboard
       }),
+      delete: adminProcedure.input(z.object({
+            id: z.string()
+        })).mutation(async ({ input }) => {
+
+            const motherboard = await prisma.motherBoard.delete({
+                where: {
+                    id: input.id,
+                }
+            })
+            return motherboard
+        }
+                    ),
     
   }),
   getAll: publicProcedure.input(z.object({
