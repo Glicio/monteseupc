@@ -4,7 +4,6 @@
  * This is especially useful for Docker builds.
  */
 !process.env.SKIP_ENV_VALIDATION && (await import("./src/env/server.mjs"));
-
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -13,5 +12,8 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    domains: ["cdn.discordapp.com", "lh3.googleusercontent.com"],
+    }
 };
 export default config;

@@ -1,28 +1,10 @@
-# Create T3 App
+# Monte Seu Pc
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Uma plataforma onde usuários podem montar seu setup com base em peças cadastradas e moderadas pela comunidade de hardware!
 
-## What's next? How do I make an app with this?
+## Como funciona?
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+ - Usuários podem criar setups, solicitar o cadastro de novas peças, avaliar e comentar em setups criados por outros usuários. Ao compartilhar seu setup o usuário pode usuário pode atribuir links às peças de seus setups e esses links pode ser links de referral, possibilitando o usuário de ganhar dinheiro/descontos com usuários que usarem seus links
+ - Moderadores e Administradores pode aceitar ou negar solicitações de cadastro e cadastrar peças novas.
+ - Casa seja possível usar anuncions, a plataforma contará com anuncios que não atrapalhem a experiência dos usuários.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
-
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
-
-## Learn More
-
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.

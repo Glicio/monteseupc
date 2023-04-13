@@ -7,6 +7,10 @@ declare module "next-auth" {
   interface Session {
     user?: {
       id: string;
+      isAdmin?: boolean;
+      isMod?: boolean;
+      isBanned?: boolean;
+      isMutted?: boolean;
     } & DefaultSession["user"];
   }
 }

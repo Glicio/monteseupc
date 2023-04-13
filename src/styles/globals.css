@@ -1,3 +1,117 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body, html{
+  height: 100%;
+}
+
+body{
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
+}
+
+* {
+  /* variables */
+
+  /* colors */
+  --color-primary: #000000;
+  --color-contrast: #845ec2;
+  --color-neutral-1: #16181c;
+  --color-neutral-2: #2f3238;
+  --color-text-primary: white;
+  /* sizes */
+  --side-menu-width: 15rem;
+  --nav-bar-height: 3rem;
+  --tabs-nav-height: 4rem;
+}
+
+.default-text-input{
+  background-color: transparent;
+  border-bottom: 1px solid white;
+  width: 100%;
+  outline: none;
+}
+
+.default-date-input{
+  background-color: transparent;
+  border-bottom: 1px solid white;
+  outline: none;
+  color-scheme: dark;
+}
+
+
+
+.primary-button{
+  background-color: var(--color-neutral-2);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+
+.primary-button:hover{
+  background-color: var(--color-contrast);
+  border: 1px solid var(--color-contrast);
+}
+
+.primary-button:active{
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.primary-button:focus{
+  outline: none;
+}
+
+.secondary-button:hover{
+  color: var(--color-contrast);
+}
+
+.default-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid var(--color-neutral-2);
+}
+
+.default-table thead {
+  background-color: var(--color-neutral-2);
+  color: var(--color-text-primary);
+}
+.default-table tbody > tr,
+td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-neutral-2);
+}
+
+.default-table tbody * td{
+  border-right: 1px solid var(--color-neutral-2);
+}
+
+.default-select-input{
+  background-color: transparent;
+  border: 1px solid var(--color-neutral-2);
+  height: 1.6rem;
+  border-radius: 0.25rem;
+  padding: 0rem .5rem;
+  font-size: .8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+
+
+
+.default-select-input:focus{
+  outline: none;
+}
+
+.default-select-input option{
+  background-color: var(--color-neutral-2);
+  color: var(--color-text-primary);
+}
