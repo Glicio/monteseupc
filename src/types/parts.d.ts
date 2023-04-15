@@ -1,11 +1,11 @@
-export interface Part {
+export interface GenericPart {
     id: string;
     name: string;
     image: string;
     brand: string;
     price: number;
     approvedAt?: string;
-    createdAt?: string
+    createdAt?: string;
     type:
         | "cpu"
         | "gpu"
