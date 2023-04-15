@@ -146,9 +146,9 @@ const MotherBoarForm = ({
             </span>
           )}
         </div>
-        <button type="button" className="w-[8rem] primary-button" onClick={() => setConfirmDelete(true)}>
+        {moboToEdit && <button type="button" className="w-[8rem] primary-button" onClick={() => setConfirmDelete(true)}>
             Deletar
-        </button>
+        </button>}
         <DefaultTextInput
           required
           title="Nome"
