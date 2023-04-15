@@ -2,10 +2,10 @@ import React from "react";
 import CheveronRight from "../svg/cheveron-right";
 import CheveronLeft from "../svg/cheveron-left";
 
-const Elipsis = () => {
+const Elipsis = ({key}: {key: string}) => {
 
     return (
-        <span className="h-fit w-fit min-w-[1.5rem] text-center">...</span>
+        <span key={key} className="h-fit w-fit min-w-[1.5rem] text-center">...</span>
     )
 }
 
@@ -22,6 +22,7 @@ const PaginationButton = ({
 }) => {
     return (
         <button
+            key={number}
             disabled={number === currentPage}
             className={`h-fit w-fit min-w-[1.5rem]  ${
                 number === currentPage ? "bg-[var(--color-neutral-1)]" : "hover:text-[var(--color-contrast)]"
@@ -63,7 +64,7 @@ const getPaginationButtons = (
                 />
             );
         }
-        buttons.push(<Elipsis/>)
+        buttons.push(<Elipsis key="eli1"/>)
         buttons.push(
             <PaginationButton
                 number={totalPages}
@@ -78,7 +79,7 @@ const getPaginationButtons = (
         buttons.push(
             <PaginationButton number={1} currentPage={page} setPage={setPage} />
         );
-        buttons.push(<Elipsis/>);
+        buttons.push(<Elipsis key="eli2"/>);
         for (let i = page - 2; i <= page + 2; i++) {
             buttons.push(
                 <PaginationButton
@@ -88,7 +89,7 @@ const getPaginationButtons = (
                 />
             );
         }
-        buttons.push(<Elipsis/>);
+        buttons.push(<Elipsis key={"eli3"}/>);
         buttons.push(
             <PaginationButton
                 number={totalPages}
@@ -104,7 +105,7 @@ const getPaginationButtons = (
             <PaginationButton number={1} currentPage={page} setPage={setPage} />
         );
 
-        buttons.push(<Elipsis/>);
+        buttons.push(<Elipsis key={"eli4"}/>);
         for (let i = totalPages - 6; i <= totalPages; i++) {
             buttons.push(
                 <PaginationButton
@@ -141,7 +142,7 @@ export default function DefaultPagination({
                 <CheveronLeft />
             </button>
             {getPaginationButtons(totalPages, page, setPage).map(
-                (button) => button
+                (button,index) => (<div key={index}>{button}</div>)
             )}
             <button
             className={`ml-1 ${page === totalPages ? "text-transparent" : "hover:text-[var(--color-contrast)]"}`}
