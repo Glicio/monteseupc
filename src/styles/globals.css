@@ -26,6 +26,21 @@ body{
   --tabs-nav-height: 4rem;
 }
 
+
+.scroll-thin::-webkit-scrollbar {
+  width: 0.1rem;
+  
+}
+
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-2);
+  border-radius: 1rem;
+}
+
 .default-text-input{
   background-color: transparent;
   border-bottom: 1px solid white;
