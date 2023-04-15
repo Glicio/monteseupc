@@ -2,7 +2,7 @@ import { type GetServerSideProps, type NextPage } from "next";
 import { useEffect, useState } from "react";
 import DefaultPagination from "../../components/navigation/defaultPagination";
 import MainLayout from "../../layouts/main";
-import { prisma } from "../../server/db";
+import { db, prisma } from "../../server/db";
 import { api } from "../../utils/api";
 
 interface Mobo {
@@ -22,6 +22,7 @@ const Mobo: NextPage<PageProps> = (props) => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [mobos, setMobos] = useState<Mobo[]>(props.mobos);
+    const [pageChanged, setPageChanged] = useState(false);
 
     const mobosQuery = api.parts.motherBoards.getAll.useQuery(
         {
@@ -35,6 +36,7 @@ const Mobo: NextPage<PageProps> = (props) => {
                 setTotalPages(data.pages);
                 const newMobos: Mobo[] = [];
                 if (!data.motherboards) return;
+                console.log("Fetched");
                 for (let i = 0; i < data.motherboards.length; i++) {
                     newMobos.push({
                         id: data.motherboards[i]?.id as string,
@@ -51,31 +53,66 @@ const Mobo: NextPage<PageProps> = (props) => {
             },
         }
     );
+    const formatter = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    });
 
     useEffect(() => {
+        if (!pageChanged) return;
         void mobosQuery.refetch();
-    }, [page]);
+    }, [page, pageChanged]);
+
     return (
         <MainLayout>
-            {mobos?.map((mobo) => (
-                <div key={mobo.id} className="flex w-full ">
-                    <div className="h-[8rem] w-[8rem]">
-                        {mobo.image ? (
-                            <img src={mobo.image} alt="Motherboard Image" />
-                        ) : (
-                            <span>TO ADD PLACEHOLD IMAGE</span>
-                        )}
+            <div className="flex">
+                <div className="filters w-[10rem] h-fit p-2 bg-[var(--color-neutral-1)]">
+                    <h2 className="mx-auto p-1">Filtros</h2>
+                    <div className="flex gap-2">
+                    <input type="checkbox" />
+                        <label htmlFor="brand">Verificado</label>
                     </div>
 
-                    <div>
-                        <div className="text-lg font-bold">{mobo.name}</div>
-                        <div className="text-xs">{mobo.brand}</div>
-                        <div className="text-xs">{mobo.createdAt ? mobo.createdAt : ""}</div>
-                        <div className="text-xs">{mobo.price}</div>
-                    </div>
                 </div>
-            ))}
-            <DefaultPagination page={page} totalPages={totalPages} setPage={(value) => {setPage(value)}}/>
+                <div className="p-4">
+                    {mobos?.map((mobo) => (
+                        <div key={mobo.id} className="flex w-full ">
+                            <div className="h-[8rem] w-[8rem] overflow-hidden">
+                                {mobo.image ? (
+                                    <img
+                                        src={mobo.image}
+                                        alt="Motherboard Image"
+                                        style={{ height: "8rem" }}
+                                    />
+                                ) : (
+                                    <span>TO ADD PLACEHOLD IMAGE</span>
+                                )}
+                            </div>
+
+                            <div>
+                                <div className="text-lg font-bold">
+                                    {mobo.name}
+                                </div>
+                                <div className="text-xs">
+                                    Marca: {mobo.brand}
+                                </div>
+                                <div className="text-xs">
+                                    Preço base:{" "}
+                                    {formatter.format(mobo.price / 100)}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    <DefaultPagination
+                        page={page}
+                        totalPages={totalPages}
+                        setPage={(value) => {
+                            setPage(value);
+                            setPageChanged(true);
+                        }}
+                    />
+                </div>
+            </div>
         </MainLayout>
     );
 };
@@ -87,6 +124,12 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
             approved: true,
         },
     });
+    try{
+    const parts = await db.execute("SELECT id, name, brand FROM MotherBoard UNION SELECT id, name, brand FROM CPU");
+        console.log("lista", parts);
+    }catch(err){
+        console.log("erro", err);
+    }
     const mobosQuery = await prisma.motherBoard.findMany({
         where: {},
         orderBy: {
