@@ -23,3 +23,24 @@ export interface GenericPart {
         | "accessory"
         | "other";
 }
+
+export interface GraphicsCard extends Omit<GenericPart, "type"> {
+    clock: number;
+    memory: number;
+    memoryType: string;
+    memoryClock: number;
+    pciGen: string;
+    displayPort: number;
+    hdmi: number;
+    dvi: number;
+    vga: number;
+    recommendedPsu: number;
+    tdp: number;
+    approvedById: string;
+    createdById: string;
+    updatedById: string;
+    createdAt: string;
+    updatedAt: string;
+    approvedAt: string;
+    obs: string;
+}
