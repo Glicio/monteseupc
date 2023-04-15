@@ -1,8 +1,15 @@
-import {  type NextPage } from "next";
+import { type GetServerSideProps, type NextPage } from "next";
 import Head from "next/head";
+import GenericPartCard from "../components/parts/generic-part-card";
 import MainLayout from "../layouts/main";
+import { getLastAddedParts } from "../server/db/parts/general";
+import { type GenericPart } from "../types/parts";
 
-const Home: NextPage = () => {
+interface PageProps {
+    lastAddedParts: GenericPart[];
+}
+
+const Home: NextPage<PageProps> = ({ lastAddedParts }) => {
     return (
         <>
             <Head>
@@ -12,15 +19,37 @@ const Home: NextPage = () => {
             </Head>
 
             <MainLayout>
-                <div className="flex-grow items-center justify-center gap-4 bg-[var(--color-primary)] p-2">
+                <div className="items-center justify-center gap-4 bg-[var(--color-primary)] p-2">
                     <h1 className="text-6xl font-bold text-white">
-                        Welcome to <a href="https://nextjs.org">MonteSeuPC</a>
+                        Monte Seu PC!
                     </h1>
                 </div>
+                {lastAddedParts.length > 0 && (
+                    <div className="bg-[var(--color-neutral-1)] p-4"
+                    >
+                        <h1 className="text-2xl font-bold text-white">
+                            Últimas peças adicionadas
+                        </h1>
+                        <div className="overflow-x-scroll scroll-thin p-2">
+                            <div className="flex gap-2 w-fit">
+                            {lastAddedParts.map((part) => (
+                                <GenericPartCard key={part.id} part={part} />
+                            ))}</div>
+                        </div>
+                    </div>
+                )}
             </MainLayout>
         </>
     );
 };
 
-export default Home;
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+    const lastAddedParts = await getLastAddedParts(true);
+    return {
+        props: {
+        lastAddedParts,
+        }
+    }
+};
 
+export default Home;
