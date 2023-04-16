@@ -91,7 +91,7 @@ body{
 }
 
 .primary-button:focus{
-  outline: none;
+ outline: 1px solid var(--color-contrast);
 }
 
 .secondary-button:hover{
@@ -131,10 +131,8 @@ td {
   transition: all 0.1s ease-in-out;
 }
 
-
-
 .default-select-input:focus{
-  outline: none;
+  outline: 1px solid var(--color-contrast);
 }
 
 .default-select-input option{
