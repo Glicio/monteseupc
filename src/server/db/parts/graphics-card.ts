@@ -36,6 +36,8 @@ export const GpuParser = z.object({
     obs: z.string().optional(),
 });
 
+
+
 /**
  * @description Get all graphics cards
  * @param {number} take - The number of graphics cards to take
@@ -62,9 +64,7 @@ export async function getGraphicsCards(
     return cardsQuery.rows as GraphicsCard[];
 }
 
-export async function create(
-    usrId: string,
-    data: Omit<
+export type CreateGpuInput = Omit<
         z.infer<typeof GpuParser>,
         | "createdById"
         | "createdAt"
@@ -72,8 +72,18 @@ export async function create(
         | "updatedAt"
         | "approvedById"
         | "approvedAt"
-    >
-) {
+        | "id"
+        | "approved"
+   >
+/**
+* @description Create a new graphics card in the database
+* @param {string} usrId - The id of the user creating the graphics card
+* @param {CreateGpuInput} data - The data to create the graphics card with
+* @returns {Promise<GraphicsCard>} - The created graphics card
+**/
+export async function createGpu(
+    usrId: string,
+    data: CreateGpuInput) {
     const gpu = await prisma.graphicsCard.create({
         data: {
             ...data,
