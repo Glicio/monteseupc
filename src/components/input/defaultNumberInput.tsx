@@ -6,12 +6,16 @@ export default function DefaultNumberInput({
   title,
   placeholder,
   required,
+  max,
+  min
 }: {
   value: number;
   setValue: (value: number) => void;
   title: string;
   placeholder?: string;
   required?: boolean;
+  max?: number;
+  min?: number;
 }) {
   const [valueState, setValueState] = React.useState<number | string>(value);
 
@@ -40,7 +44,15 @@ export default function DefaultNumberInput({
         }}
         onChange={(e) => {
           const value = e.target.value.replace(/^0+/g, "");
-
+            if (isNaN(Number(value))) {
+                return
+                }
+            if (max && Number(value) > max) {
+                return
+                }
+            if (min && Number(value) < min) {
+                return
+                }
           setValueState(value);
           setValue(Math.ceil(Number(value)));
         }}

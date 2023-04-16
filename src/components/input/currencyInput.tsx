@@ -14,10 +14,14 @@ export default function CurrencyInput({
   value,
   setValue,
   locale,
+  max,
+  min
 }: {
   value: number;
   setValue: (value: number) => void;
   locale?: string;
+  max?: number;
+  min?: number;
 }) {
 
     const [input, setInput] = React.useState(value ? String(value) : "")
@@ -49,8 +53,13 @@ export default function CurrencyInput({
 //        tabIndex={-1}
         onChange={(e) => {
             if(/\D/g.test(e.target.value)) return;
+            
             const value = e.target.value
-            if(value.length > 10) return;
+
+            if(max && Number(value) > max) return;
+            if(min && Number(value) < min) return;
+
+            if(!max && value.length > 10) return;
             setInput(value);
             setValue(value ? Number(value) : 0);
         }}
