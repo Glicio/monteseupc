@@ -14,8 +14,12 @@ import Sockets from "./parts/sockets";
 import Chipsets from "./parts/chipsets";
 import MotherBoard from "./parts/mobo";
 import CPU from "./parts/cpu";
+import Gpu from "./parts/gpu";
 
-const getActiveContent = (name: string) => {
+
+type ValidComponentType = "UserComponent" | "Sockets" | "Chipsets" | "MotherBoards" | "Processadores" | "GPU";
+
+const getActiveContent = (name: ValidComponentType) => {
   switch (name) {
     case "UserComponent":
       return <UserComponent />;
@@ -27,13 +31,15 @@ const getActiveContent = (name: string) => {
       return <MotherBoard />;
     case "Processadores":
       return <CPU/>;
+    case "GPU": 
+        return <Gpu/>;
     default:
       return <></>;
   }
 };
 
 const Dashboard: NextPage = () => {
-  const [activeComponent, setActiveContent] = useState("");
+  const [activeComponent, setActiveContent] = useState<ValidComponentType>("UserComponent");
 
   return (
     <>
@@ -64,7 +70,7 @@ const Dashboard: NextPage = () => {
               <SideMenuButton label="Placas Mãe" onClick={() => setActiveContent("MotherBoards")}/>
               <SideMenuButton label="Processadores" onClick={() => setActiveContent("Processadores")}/>
               <SideMenuButton label="RAM" />
-              <SideMenuButton label="GPU" />
+              <SideMenuButton label="GPU" onClick={() => setActiveContent("GPU")}/>
               <SideMenuButton label="PSU" />
               <SideMenuButton label="Gabinetes" />
               <SideMenuButton label="Armazenamento" />
