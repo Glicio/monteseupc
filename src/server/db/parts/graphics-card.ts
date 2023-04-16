@@ -2,7 +2,7 @@ import { type GraphicsCard } from "@prisma/client";
 import { z } from "zod";
 import { db, prisma } from "../../db";
 
-const GpuParser = z.object({
+export const GpuParser = z.object({
     id: z.string().optional(),
     name: z.string().min(1).max(100),
     image: z.string(),
