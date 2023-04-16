@@ -1,7 +1,7 @@
 export interface GenericPart {
     id: string;
     name: string;
-    image: string;
+    image?: string;
     brand: string;
     price: number;
     approvedAt?: string;
