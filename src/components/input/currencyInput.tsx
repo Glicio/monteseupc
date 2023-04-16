@@ -47,12 +47,11 @@ export default function CurrencyInput({
             setInput("");
         }}
         onKeyDown={(e) => {
-            if(isNaN(Number(e.key)) && e.key !== "Backspace" && e.key !== "Delete") e.preventDefault();
+            if(isNaN(Number(e.key)) && e.key !== "Backspace" && e.key !== "Delete" && e.key !== "Tab") e.preventDefault();
         }}
         value={input}
 //        tabIndex={-1}
         onChange={(e) => {
-            if(/\D/g.test(e.target.value)) return;
             
             const value = e.target.value
 
