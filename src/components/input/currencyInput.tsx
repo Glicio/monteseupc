@@ -22,7 +22,6 @@ export default function CurrencyInput({
 
     const [input, setInput] = React.useState(value ? String(value) : "")
 
-    const inputRef = React.useRef<HTMLInputElement>(null);
 
     const getFormattedValue = (value: number) => {
         return new Intl.NumberFormat(locale || "pt-BR", {style: "currency", currency: "BRL"}).format(value/100 || 0)
@@ -37,33 +36,33 @@ export default function CurrencyInput({
         style={{
             backgroundColor: "transparent",
             color: "transparent",
-            
+        }}
+        onClick={(e) => {
+            e.preventDefault();
+            setValue(0);
+            setInput("");
         }}
         onKeyDown={(e) => {
-            if(e.key === "." || e.key === "," || e.key === "Control" ) e.preventDefault();
+            if(isNaN(Number(e.key)) && e.key !== "Backspace" && e.key !== "Delete") e.preventDefault();
         }}
         value={input}
-        tabIndex={-1}
+//        tabIndex={-1}
         onChange={(e) => {
             if(/\D/g.test(e.target.value)) return;
             const value = e.target.value
+            if(value.length > 10) return;
             setInput(value);
             setValue(value ? Number(value) : 0);
-            if(inputRef.current){
-                inputRef.current.setSelectionRange(value.length, value.length)
-            }
         }}
       />
-      <input
-        type="text"
+      <div 
         className={["default-text-input absolute w-full", styles["fake-input"]].join(" ")}
         style={{
             backgroundPosition: `${(getFormattedValue(value).length-0.5)/2}rem center`,
         }}
-        ref={inputRef}
-        readOnly
-        value={getFormattedValue(value)}
-      />
+      >
+            {getFormattedValue(value)}
+      </div>
     </div>
   );
 }

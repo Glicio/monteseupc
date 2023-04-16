@@ -1,14 +1,26 @@
 .fake-input:focus {
-    background-image:none;
-  }
-  .real-input:focus ~ .fake-input {
-    animation: blink-empty .8s infinite linear;
-    background-image: linear-gradient(var(--color-text-primary),var(--color-text-primary));
+    background-image: none;
+}
+.real-input:focus ~ .fake-input {
+    animation: blink-empty 0.8s infinite linear;
+    background-image: linear-gradient(
+        var(--color-text-primary),
+        var(--color-text-primary)
+    );
     /* background-position: 1px  center; */
     background-repeat: no-repeat;
-    background-size:1px 1.2em;
-  }
-  @keyframes blink-empty {
-    30%, 75%{background-size:1px 1.2em;}
-    50% {background-size: 0 1.2em;}
-  }
+    background-size: 1px 1.2em;
+}
+
+.real-input::selection, .fake-input::-moz-selection{
+    color: transparent;
+}
+@keyframes blink-empty {
+    30%,
+    75% {
+        background-size: 1px 1.2em;
+    }
+    50% {
+        background-size: 0 1.2em;
+    }
+}
