@@ -26,6 +26,17 @@ body{
   --tabs-nav-height: 4rem;
 }
 
+.form-item{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+}
+.form-item > label {
+    font-weight: 500;
+    font-size: 0.875rem/* 14px */;
+    line-height: 1.25rem/* 20px */;
+}
 
 .scroll-thin::-webkit-scrollbar {
   width: 0.1rem;
