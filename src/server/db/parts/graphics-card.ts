@@ -15,7 +15,7 @@ export const GpuParser = z.object({
     memoryType: z.enum(["GDDR5", "GDDR6", "GDDR6X", "GDDR7", "HBM2", "HBM3", "HBM4"]),
     memoryClock: z.number(),
     //interface
-    pciGen: z.enum(["PCIe 2.0", "PCIe 3.0", "PCIe 4.0"]),
+    pciGen: z.enum(["1", "2", "3", "4"]),
     displayPort: z.number(),
     hdmi: z.number(),
     dvi: z.number(),
