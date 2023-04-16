@@ -55,13 +55,17 @@ model User {
     lastLogin     DateTime  @default(now())
 
     //motherboards created by user
-    mobosCreated  MotherBoard[] @relation("mobosCreated")
-    mobosUpdated  MotherBoard[] @relation("mobosUpdated")
-    approvedMobos MotherBoard[] @relation("approvedMobos")
+    mobosCreated  MotherBoard[]  @relation("mobosCreated")
+    mobosUpdated  MotherBoard[]  @relation("mobosUpdated")
+    approvedMobos MotherBoard[]  @relation("approvedMobos")
     //cpus created by user
-    cpusCreated   CPU[]         @relation("cpusCreated")
-    cpusUpdated   CPU[]         @relation("cpusUpdated")
-    approvedCpus  CPU[]         @relation("approvedCpus")
+    cpusCreated   CPU[]          @relation("cpusCreated")
+    cpusUpdated   CPU[]          @relation("cpusUpdated")
+    approvedCpus  CPU[]          @relation("approvedCpus")
+    //gpus created by user
+    gpusCreated   GraphicsCard[] @relation("gpusCreated")
+    gpusUpdated   GraphicsCard[] @relation("gpusUpdated")
+    approvedGpus  GraphicsCard[] @relation("approvedGpus")
 
     accounts Account[]
     sessions Session[]
@@ -96,40 +100,39 @@ model Chipset {
 }
 
 model MotherBoard {
-    id          String    @id @default(cuid())
-    approved    Boolean   @default(false)
-    name        String
-    socketId    String
-    brand       String
-    price       Int
-    image       String?
-    link        String?
-    ramSlots    Int
-    ramType     String
-    ramMaxSize  Int
-    ramMaxSpeed Int
-    ramChannels Int
-    ramEcc      Boolean
-    usb2        Int
-    usb3        Int
-    usb3_1      Int
-    usb3_2      Int
-    usbTypeC    Int
-    sata        Int
-    m2          Int
-    pcieX16     Int
-    pciGen      String
-    size        String
-    chipsetId   String
-    obs         String?
-    launchDate  DateTime?
-    createdAt   DateTime  @default(now())
-    createdById String?
-    updatedAt   DateTime? @updatedAt
-    updatedById String?
-    approvedAt  DateTime? 
+    id           String    @id @default(cuid())
+    approved     Boolean   @default(false)
+    name         String
+    socketId     String
+    brand        String
+    price        Int
+    image        String?
+    link         String?
+    ramSlots     Int
+    ramType      String
+    ramMaxSize   Int
+    ramMaxSpeed  Int
+    ramChannels  Int
+    ramEcc       Boolean
+    usb2         Int
+    usb3         Int
+    usb3_1       Int
+    usb3_2       Int
+    usbTypeC     Int
+    sata         Int
+    m2           Int
+    pcieX16      Int
+    pciGen       String
+    size         String
+    chipsetId    String
+    obs          String?
+    launchDate   DateTime?
+    createdAt    DateTime  @default(now())
+    createdById  String?
+    updatedAt    DateTime? @updatedAt
+    updatedById  String?
+    approvedAt   DateTime?
     approvedById String?
-
 
     approvedBy User?   @relation(fields: [approvedById], references: [id], name: "approvedMobos")
     createdBy  User?   @relation(fields: [createdById], references: [id], name: "mobosCreated")
@@ -174,13 +177,59 @@ model CPU {
     updatedAt  DateTime? @updatedAt
     approvedAt DateTime?
 
-    createdBy  User?     @relation(fields: [createdById], references: [id], name: "cpusCreated")
-    updatedBy  User?     @relation(fields: [updatedById], references: [id], name: "cpusUpdated")
-    approvedBy User?     @relation(fields: [approvedById], references: [id], name: "approvedCpus")
-    socket     Socket    @relation(fields: [socketId], references: [id])
+    createdBy  User?  @relation(fields: [createdById], references: [id], name: "cpusCreated")
+    updatedBy  User?  @relation(fields: [updatedById], references: [id], name: "cpusUpdated")
+    approvedBy User?  @relation(fields: [approvedById], references: [id], name: "approvedCpus")
+    socket     Socket @relation(fields: [socketId], references: [id])
 
     @@index([approvedById])
     @@index([socketId])
+    @@index([createdById])
+    @@index([updatedById])
+}
+
+model GraphicsCard {
+    //general info
+    id          String  @id @default(cuid())
+    approved    Boolean @default(false)
+    name        String
+    image       String
+    link        String?
+    brand       String
+    price       Int
+    clock       Int
+    //memory
+    memory      Int
+    memoryType  String
+    memoryClock Int
+    //interface
+    pciGen      String
+    displayPort Int
+    hdmi        Int
+    dvi         Int
+    vga         Int
+
+    //power
+    recommendedPsu Int
+    tdp            Int
+
+    //relations
+    approvedById String?
+    createdById  String?
+    updatedById  String?
+
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime?
+    approvedAt DateTime?
+
+    createdBy  User? @relation(fields: [createdById], references: [id], name: "gpusCreated")
+    updatedBy  User? @relation(fields: [updatedById], references: [id], name: "gpusUpdated")
+    approvedBy User? @relation(fields: [approvedById], references: [id], name: "approvedGpus")
+
+    //misc
+    obs String? @db.Text
+
+    @@index([approvedById])
     @@index([createdById])
     @@index([updatedById])
 }
