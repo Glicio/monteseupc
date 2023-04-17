@@ -47,7 +47,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
     const lastAddedParts = await getLastAddedParts(true);
     return {
         props: {
-        lastAddedParts,
+            lastAddedParts,
         }
     }
 };
