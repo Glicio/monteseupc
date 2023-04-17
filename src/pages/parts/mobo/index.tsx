@@ -1,9 +1,10 @@
 import { type GetServerSideProps, type NextPage } from "next";
 import { useEffect, useState } from "react";
-import DefaultPagination from "../../components/navigation/defaultPagination";
-import MainLayout from "../../layouts/main";
-import { db, prisma } from "../../server/db";
-import { api } from "../../utils/api";
+import DefaultPagination from "../../../components/navigation/defaultPagination";
+import PartListItem from "../../../components/parts/part-list-item";
+import MainLayout from "../../../layouts/main";
+import { db, prisma } from "../../../server/db";
+import { api } from "../../../utils/api";
 
 interface Mobo {
     id: string;
@@ -76,32 +77,7 @@ const Mobo: NextPage<PageProps> = (props) => {
                 </div>
                 <div className="p-4">
                     {mobos?.map((mobo) => (
-                        <div key={mobo.id} className="flex w-full ">
-                            <div className="h-[8rem] w-[8rem] overflow-hidden">
-                                {mobo.image ? (
-                                    <img
-                                        src={mobo.image}
-                                        alt="Motherboard Image"
-                                        style={{ height: "8rem" }}
-                                    />
-                                ) : (
-                                    <span>TO ADD PLACEHOLD IMAGE</span>
-                                )}
-                            </div>
-
-                            <div>
-                                <div className="text-lg font-bold">
-                                    {mobo.name}
-                                </div>
-                                <div className="text-xs">
-                                    Marca: {mobo.brand}
-                                </div>
-                                <div className="text-xs">
-                                    Preço base:{" "}
-                                    {formatter.format(mobo.price / 100)}
-                                </div>
-                            </div>
-                        </div>
+                        <PartListItem key={mobo.id} part={{...mobo, type: "motherboard"}} />
                     ))}
                     <DefaultPagination
                         page={page}
@@ -124,12 +100,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
             approved: true,
         },
     });
-    try{
-    const parts = await db.execute("SELECT id, name, brand FROM MotherBoard UNION SELECT id, name, brand FROM CPU");
-        console.log("lista", parts);
-    }catch(err){
-        console.log("erro", err);
-    }
     const mobosQuery = await prisma.motherBoard.findMany({
         where: {},
         orderBy: {
