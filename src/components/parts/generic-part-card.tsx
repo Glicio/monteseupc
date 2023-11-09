@@ -22,7 +22,7 @@ export default function GenericPartCard({ part }: { part: Part }) {
                 {part.name}
             </span>
             <span className="text-xs text-gray-400">
-                ~ {formatter.format(part.price as number / 100)}
+                ~ {formatter.format(part.price as unknown as number)}
             </span>
         </div>
     );

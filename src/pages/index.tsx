@@ -1,17 +1,16 @@
-import { Part } from "@prisma/client";
+import { type Part } from "@prisma/client";
 import { type GetServerSideProps, type NextPage } from "next";
 import Head from "next/head";
 import GenericPartCard from "../components/parts/generic-part-card";
 import MainLayout from "../layouts/main";
 import { prisma } from "../server/db";
-import { type GenericPart } from "../types/parts";
 
 interface PageProps {
   lastAddedParts: string;
 }
 
 const Home: NextPage<PageProps> = ({ lastAddedParts }) => {
-    const parsedParts = JSON.parse(lastAddedParts) as (Omit<Part, "price"> & {price: number})[];
+    const parsedParts = JSON.parse(lastAddedParts) as Part[];
   return (
     <>
       <Head>
