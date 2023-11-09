@@ -1,7 +1,7 @@
+import { Part } from "@prisma/client";
 import React from "react";
-import { type GenericPart } from "../../types/parts";
 
-export default function GenericPartCard({ part }: { part: GenericPart }) {
+export default function GenericPartCard({ part }: { part: Part }) {
     const formatter = new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL",
@@ -22,7 +22,7 @@ export default function GenericPartCard({ part }: { part: GenericPart }) {
                 {part.name}
             </span>
             <span className="text-xs text-gray-400">
-                ~ {formatter.format(part.price / 100)}
+                ~ {formatter.format(part.price as number / 100)}
             </span>
         </div>
     );
