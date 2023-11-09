@@ -2,234 +2,357 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider     = "mysql"
-    url          = env("DATABASE_URL")
-    relationMode = "prisma"
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
-    @@index([userId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId])
+  @@index([userId])
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    isAdmin       Boolean   @default(false)
-    isMod         Boolean   @default(false)
-    isBanned      Boolean   @default(false)
-    isMutted      Boolean   @default(false)
-    createdAt     DateTime  @default(now())
-    lastLogin     DateTime  @default(now())
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  isAdmin       Boolean   @default(false)
+  isMod         Boolean   @default(false)
+  isBanned      Boolean   @default(false)
+  isMutted      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  lastLogin     DateTime  @default(now())
+  //relations
+  partsCreated  Part[]    @relation("createdParts")
+  partsUpdated  Part[]    @relation("updatedParts")
+  partsVerified Part[]    @relation("verifiedParts")
 
-    //motherboards created by user
-    mobosCreated  MotherBoard[]  @relation("mobosCreated")
-    mobosUpdated  MotherBoard[]  @relation("mobosUpdated")
-    approvedMobos MotherBoard[]  @relation("approvedMobos")
-    //cpus created by user
-    cpusCreated   CPU[]          @relation("cpusCreated")
-    cpusUpdated   CPU[]          @relation("cpusUpdated")
-    approvedCpus  CPU[]          @relation("approvedCpus")
-    //gpus created by user
-    gpusCreated   GraphicsCard[] @relation("gpusCreated")
-    gpusUpdated   GraphicsCard[] @relation("gpusUpdated")
-    approvedGpus  GraphicsCard[] @relation("approvedGpus")
-
-    accounts Account[]
-    sessions Session[]
+  accounts Account[]
+  sessions Session[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+}
+
+model Part {
+  id             String        @id @default(cuid())
+  name           String
+  brand          String
+  price          Decimal
+  type           String //motherboard, cpu, gpu, ram, psu, case, storage
+  image          String?
+  link           String?
+  obs            String?
+  // timestamps
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime?     @updatedAt
+  verifiedAt     DateTime?
+  // relations
+  verifiedById   String?
+  updatedById    String?
+  createdById    String?
+  createdBy      User?         @relation(fields: [createdById], references: [id], name: "createdParts")
+  updatedBy      User?         @relation(fields: [updatedById], references: [id], name: "updatedParts")
+  verifiedBy     User?         @relation(fields: [verifiedById], references: [id], name: "verifiedParts")
+  
+  motherBoard    MotherBoard?  @relation("motherBoardPart")
+  cpu            CPU?          @relation("cpuPart")
+  graphicsCard   GraphicsCard? @relation("graphicsCardPart")
+  ram            Ram?          @relation("ramPart")
+  psu            Psu?          @relation("psuPart")
+  case           Case?         @relation("casePart")
+  storage        Storage?      @relation("storagePart")
+  cooler         Cooler?       @relation("coolerPart")
+  monitor        Monitor?      @relation("monitorPart")
+  keyboard       Keyboard?     @relation("keyboardPart")
+  mouse          Mouse?        @relation("mousePart")
+  headset        Headset?      @relation("headsetPart")
+  microphone     Microphone?   @relation("microphonePart")
+  webcam         Webcam?       @relation("webcamPart")
+
+
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([verifiedById])
 }
 
 model Socket {
-    id           String        @id @default(cuid())
-    name         String
-    brand        String
-    motherBoards MotherBoard[]
-    cpus         CPU[]
-    chipsets     Chipset[]
+  id           String        @id @default(cuid())
+  name         String
+  brand        String
+  motherBoards MotherBoard[]
+  cpus         CPU[]
+  chipsets     Chipset[]
 }
 
 model Chipset {
-    id           String        @id @default(cuid())
-    name         String
-    brand        String
-    socketId     String
-    socket       Socket        @relation(fields: [socketId], references: [id])
-    motherBoards MotherBoard[]
+  id           String        @id @default(cuid())
+  name         String
+  brand        String
+  socketId     String
+  socket       Socket        @relation(fields: [socketId], references: [id])
+  motherBoards MotherBoard[]
 
-    @@index([socketId])
+  @@index([socketId])
 }
 
 model MotherBoard {
-    id           String    @id @default(cuid())
-    approved     Boolean   @default(false)
-    name         String
-    socketId     String
-    brand        String
-    price        Int
-    image        String?
-    link         String?
-    ramSlots     Int
-    ramType      String
-    ramMaxSize   Int
-    ramMaxSpeed  Int
-    ramChannels  Int
-    ramEcc       Boolean
-    usb2         Int
-    usb3         Int
-    usb3_1       Int
-    usb3_2       Int
-    usbTypeC     Int
-    sata         Int
-    m2           Int
-    pcieX16      Int
-    pciGen       String
-    size         String
-    chipsetId    String
-    obs          String?
-    launchDate   DateTime?
-    createdAt    DateTime  @default(now())
-    createdById  String?
-    updatedAt    DateTime? @updatedAt
-    updatedById  String?
-    approvedAt   DateTime?
-    approvedById String?
+  id          String    @id @default(cuid())
+  socketId    String
+  ramSlots    Int
+  ramType     String
+  ramMaxSize  Int
+  ramMaxSpeed Int
+  ramChannels Int
+  ramEcc      Boolean
+  usb2        Int
+  usb3        Int
+  usb3_1      Int
+  usb3_2      Int
+  usbTypeC    Int
+  sata        Int
+  m2          Int
+  pcieX16     Int
+  pciGen      String
+  size        String
+  chipsetId   String
+  launchDate  DateTime?
 
-    approvedBy User?   @relation(fields: [approvedById], references: [id], name: "approvedMobos")
-    createdBy  User?   @relation(fields: [createdById], references: [id], name: "mobosCreated")
-    updatedBy  User?   @relation(fields: [updatedById], references: [id], name: "mobosUpdated")
-    socket     Socket  @relation(fields: [socketId], references: [id])
-    chipset    Chipset @relation(fields: [chipsetId], references: [id])
+  partId  String  @unique
+  part    Part   @relation("motherBoardPart", fields: [partId], references: [id])
+  socket  Socket  @relation(fields: [socketId], references: [id])
+  chipset Chipset @relation(fields: [chipsetId], references: [id])
 
-    @@index([approvedById])
-    @@index([createdById])
-    @@index([socketId])
-    @@index([updatedById])
-    @@index([chipsetId])
+  @@index([partId])
+  @@index([socketId])
+  @@index([chipsetId])
 }
 
 model CPU {
-    id            String  @id @default(cuid())
-    approved      Boolean @default(false)
-    name          String
-    image         String
-    link          String?
-    brand         String
-    generation    Int
-    price         Int
-    cores         Int
-    threads       Int
-    baseClock     Int
-    boostClock    Int
-    tdp           Int
-    cache1        Int
-    cache2        Int
-    cache3        Int
-    launchDate    String
-    integratedGpu Boolean
-    obs           String?
+  id            String  @id @default(cuid())
+  generation    Int
+  cores         Int
+  threads       Int
+  baseClock     Int
+  boostClock    Int
+  tdp           Int
+  cache1        Int
+  cache2        Int
+  cache3        Int
+  launchDate    String
+  integratedGpu Boolean
 
-    approvedById String?
-    createdById  String?
-    updatedById  String?
-    socketId     String
+  socketId String
 
-    createdAt  DateTime  @default(now())
-    updatedAt  DateTime? @updatedAt
-    approvedAt DateTime?
+  partId String @unique
+  part Part @relation("cpuPart", fields: [partId], references: [id])
 
-    createdBy  User?  @relation(fields: [createdById], references: [id], name: "cpusCreated")
-    updatedBy  User?  @relation(fields: [updatedById], references: [id], name: "cpusUpdated")
-    approvedBy User?  @relation(fields: [approvedById], references: [id], name: "approvedCpus")
-    socket     Socket @relation(fields: [socketId], references: [id])
+  socket Socket @relation(fields: [socketId], references: [id])
 
-    @@index([approvedById])
-    @@index([socketId])
-    @@index([createdById])
-    @@index([updatedById])
+  @@index([partId])
+  @@index([socketId])
 }
 
 model GraphicsCard {
-    //general info
-    id          String  @id @default(cuid())
-    approved    Boolean @default(false)
-    name        String
-    image       String
-    link        String?
-    brand       String
-    price       Int
-    clock       Int
-    //memory
-    memory      Int
-    memoryType  String
-    memoryClock Int
-    //interface
-    pciGen      String
-    displayPort Int
-    hdmi        Int
-    dvi         Int
-    vga         Int
+  //general info
+  id          String @id @default(cuid())
+  price       Int
+  clock       Int
+  //memory
+  memory      Int
+  memoryType  String
+  memoryClock Int
+  //interface
+  pciGen      String
+  displayPort Int
+  hdmi        Int
+  dvi         Int
+  vga         Int
 
-    //power
-    recommendedPsu Int
-    tdp            Int
+  //power
+  recommendedPsu Int
+  tdp            Int
 
-    //relations
-    approvedById String?
-    createdById  String?
-    updatedById  String?
+  //relations
+  partId String @unique
+  part Part @relation("graphicsCardPart", fields: [partId], references: [id])
 
-    createdAt  DateTime  @default(now())
-    updatedAt  DateTime?
-    approvedAt DateTime?
+  @@index([partId])
+}
 
-    createdBy  User? @relation(fields: [createdById], references: [id], name: "gpusCreated")
-    updatedBy  User? @relation(fields: [updatedById], references: [id], name: "gpusUpdated")
-    approvedBy User? @relation(fields: [approvedById], references: [id], name: "approvedGpus")
+model Ram {
+  id        String  @id @default(cuid())
+  frequency Int
+  size      Int
+  type      String //DDR3, DDR4, DDR5, DDR6
+  ecc       Boolean
 
-    //misc
-    obs String? @db.Text
+  partId String @unique
+  part Part @relation("ramPart", fields: [partId], references: [id])
 
-    @@index([approvedById])
-    @@index([createdById])
-    @@index([updatedById])
+  @@index([partId])
+}
+
+model Psu {
+  id         String  @id @default(cuid())
+  power      Int
+  efficiency String
+  modular    Boolean
+
+  partId String @unique
+  part Part @relation("psuPart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Case {
+  id         String    @id @default(cuid())
+  size       String
+  type       String
+  usb2       Int
+  usb3       Int
+  usb3_1     Int
+  usb3_2     Int
+  usbTypeC   Int
+  sata       Int
+  m2         Int
+  pcieX16    Int
+  pciGen     String
+  launchDate DateTime?
+
+  partId String @unique
+  part Part @relation("casePart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Storage {
+  id         String    @id @default(cuid())
+  size       Int
+  type       String
+  interface  String
+  cache      Int
+  launchDate DateTime?
+
+  partId String @unique
+  part Part @relation("storagePart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Cooler {
+  id         String    @id @default(cuid())
+  type       String //air, water
+  size       String
+  launchDate DateTime?
+
+  partId String @unique
+  part Part @relation("coolerPart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Monitor {
+  id          String    @id @default(cuid())
+  size        Int
+  resolution  String
+  refreshRate Int
+  panelType   String
+  launchDate  DateTime?
+
+  partId String @unique
+  part Part @relation("monitorPart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Keyboard {
+  id         String    @id @default(cuid())
+  type       String //mechanical, membrane
+  launchDate DateTime?
+
+  partId String @unique
+  part Part @relation("keyboardPart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Mouse {
+  id         String    @id @default(cuid())
+  type       String //optical, laser
+  launchDate DateTime?
+
+  partId String @unique
+  part Part @relation("mousePart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Headset {
+  id         String    @id @default(cuid())
+  type       String //headphones, earphones
+  launchDate DateTime?
+
+  partId String @unique
+  part Part @relation("headsetPart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Microphone {
+  id         String    @id @default(cuid())
+  type       String //condenser, dynamic
+  launchDate DateTime?
+
+  partId String @unique
+  part Part @relation("microphonePart", fields: [partId], references: [id])
+
+  @@index([partId])
+}
+
+model Webcam {
+  id         String    @id @default(cuid())
+  resolution String
+  launchDate DateTime?
+
+  partId String @unique
+  part Part @relation("webcamPart", fields: [partId], references: [id])
+
+  @@index([partId])
 }

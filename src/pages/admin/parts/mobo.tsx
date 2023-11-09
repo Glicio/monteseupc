@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import BackButton from "../../../components/navigation/backButton";
 import { api } from "../../../utils/api";
-import { type User, type MotherBoard } from "@prisma/client";
+import { type MotherBoard, type Part } from "@prisma/client";
 import CurrencyInput from "../../../components/input/currencyInput";
 import DefaultTextInput from "../../../components/input/defaultTextInput";
 import DefaultNumberInput from "../../../components/input/defaultNumberInput";
@@ -11,45 +11,47 @@ import SelectSocket from "../../../components/input/selectSocket";
 import { AppContext } from "../../../components/context/AppContext";
 import TableSearchForm from "../../../components/input/tableSearchForm";
 import ConfirmDialog from "../../../components/input/confirmDialog";
+import { type OmitDynamicFields } from "../../../types/helper_types";
+import { PartType } from "../../../types/parts";
 
-interface Mobo
-  extends Omit<
-    MotherBoard,
-    "createdAt" | "updatedAt" | "createdById" | "updatedById" | "approved" | "approvedAt" | "approvedById"
-  > {
-  createdAt?: Date | null;
-  updatedAt?: Date | null;
-  createdBy?: User | null;
-  updatedBy?: User | null;
-}
+export type Mobo = OmitDynamicFields<Part> & {
+  motherBoard: MotherBoard;
+};
+
+
 type MoboActions = keyof Mobo;
 
 const motherBoardInitialState: Mobo = {
   id: "",
   name: "",
-  socketId: "",
+  type: PartType.MOTHERBOARD,
   brand: "",
-  price: 0,
+  price: 0.0,
   image: "",
   link: "",
-  ramSlots: 0,
-  ramType: "DDR4",
-  ramMaxSize: 4,
-  ramMaxSpeed: 3200,
-  ramChannels: 2,
-  ramEcc: false,
-  usb2: 0,
-  usb3: 0,
-  usb3_1: 0,
-  usb3_2: 0,
-  usbTypeC: 0,
-  sata: 1,
-  m2: 0,
-  pcieX16: 1,
-  pciGen: "",
-  size: "ATX",
-  chipsetId: "",
-  launchDate: null,
+  motherBoard: {
+    partId: "",
+    id: "",
+    socketId: "",
+    ramSlots: 0,
+    ramType: "DDR4",
+    ramMaxSize: 4,
+    ramMaxSpeed: 3200,
+    ramChannels: 2,
+    ramEcc: false,
+    usb2: 0,
+    usb3: 0,
+    usb3_1: 0,
+    usb3_2: 0,
+    usbTypeC: 0,
+    sata: 1,
+    m2: 0,
+    pcieX16: 1,
+    pciGen: "",
+    size: "ATX",
+    chipsetId: "",
+    launchDate: null,
+  },
   obs: "",
 };
 
@@ -57,7 +59,7 @@ const moboReducer = (
   state: Mobo,
   action: {
     type: MoboActions;
-    payload: string | number | boolean | undefined | null | Date;
+    payload: string | number | boolean | undefined | null | Date | typeof motherBoardInitialState.motherBoard;
   }
 ): Mobo => {
   return {
@@ -71,7 +73,7 @@ const MotherBoarForm = ({
   moboToEdit,
 }: {
   back: (refetch: boolean) => void;
-  moboToEdit?: MotherBoard;
+  moboToEdit?: Mobo;
 }) => {
   const { toast } = useContext(AppContext);
   const [confirmDelete, setConfirmDelete] = React.useState(false);
@@ -87,17 +89,17 @@ const MotherBoarForm = ({
       },
     });
 
-    const deleteMutation = api.parts.motherBoards.admin.delete.useMutation({
-        onSuccess: () => {
-            toast.success("Placa mãe deletada com sucesso!")
-            back(true)
-        },
-        onError: (err) => {
-            console.error(err)
-            toast.error("Erro ao deletar placa mãe!")
-        }
-    })
- 
+  const deleteMutation = api.parts.motherBoards.admin.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Placa mãe deletada com sucesso!");
+      back(true);
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Erro ao deletar placa mãe!");
+    },
+  });
+
   const [mobo, dispatch] = React.useReducer(
     moboReducer,
     moboToEdit || motherBoardInitialState
@@ -106,24 +108,33 @@ const MotherBoarForm = ({
   return (
     <div className="w-full p-2 pb-4">
       <BackButton onClick={() => back(false)} />
-      <ConfirmDialog open={confirmDelete} onClose={() => {setConfirmDelete(false)}} onConfirm={() => {
-      if(moboToEdit?.id) {
-      deleteMutation.mutate({id: moboToEdit.id})
-      }
-
-      }} title="Deletar placa mãe?" confirmText={moboToEdit?.name || "DELETAR"}/>
+      <ConfirmDialog
+        open={confirmDelete}
+        onClose={() => {
+          setConfirmDelete(false);
+        }}
+        onConfirm={() => {
+          if (moboToEdit?.id) {
+            deleteMutation.mutate({ id: moboToEdit.id });
+          }
+        }}
+        title="Deletar placa mãe?"
+        confirmText={moboToEdit?.name || "DELETAR"}
+      />
       <form
         className="mx-auto flex w-[25rem] flex-col gap-2"
         onSubmit={(e) => {
           const { id, ...data } = mobo;
 
-          createOrUpdate.mutate({ id, data });
+          createOrUpdate.mutate({ id, data: {...data, price: data.price as number} });
 
           e.preventDefault();
         }}
       >
         <div className="flex flex-col">
-          <h1 className="text-2xl font-bold">{moboToEdit ? "Editar" : "Cadastrar"} Placa Mãe</h1>
+          <h1 className="text-2xl font-bold">
+            {moboToEdit ? "Editar" : "Cadastrar"} Placa Mãe
+          </h1>
           {mobo.id && (
             <span className="text-sm text-[var(--color-neutral-2)]">
               ID: {mobo.id}
@@ -146,9 +157,15 @@ const MotherBoarForm = ({
             </span>
           )}
         </div>
-        {moboToEdit && <button type="button" className="w-[8rem] primary-button" onClick={() => setConfirmDelete(true)}>
+        {moboToEdit && (
+          <button
+            type="button"
+            className="primary-button w-[8rem]"
+            onClick={() => setConfirmDelete(true)}
+          >
             Deletar
-        </button>}
+          </button>
+        )}
         <DefaultTextInput
           required
           title="Nome"
@@ -164,22 +181,22 @@ const MotherBoarForm = ({
           setValue={(value) => dispatch({ type: "brand", payload: value })}
         />
         <SelectSocket
-          value={mobo.socketId}
+          value={mobo.motherBoard.socketId}
           required
-          setValue={(value) => dispatch({ type: "socketId", payload: value })}
-        />
+          setValue={(value) => dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, socketId: value } })} 
+            />
         <SelectChipset
           required
-          value={mobo.chipsetId}
-          socketId={mobo.socketId}
+          value={mobo.motherBoard.chipsetId}
+          socketId={mobo.motherBoard.socketId}
           setValue={(value) => {
-            dispatch({ type: "chipsetId", payload: value });
+            dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, chipsetId: value } });
           }}
         />
         <div className="form-item flex flex-col">
           <label htmlFor="price">Preço Base</label>
           <CurrencyInput
-            value={mobo.price}
+            value={mobo.price as number}
             setValue={(value) => {
               dispatch({ type: "price", payload: value });
             }}
@@ -203,43 +220,45 @@ const MotherBoarForm = ({
         <div className="ram flex items-end gap-2">
           <DefaultNumberInput
             title="Slots de Memória RAM"
-            value={mobo.ramSlots}
+            value={mobo.motherBoard.ramSlots}
             placeholder="4"
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "ramSlots", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, ramSlots: value } });
             }}
           />
           <SelectRamType
-            value={mobo.ramType}
-            setValue={(value) => dispatch({ type: "ramType", payload: value })}
+            value={mobo.motherBoard.ramType}
+            setValue={(value) => {
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, ramType: value } });
+            }}
           />
         </div>
         <DefaultNumberInput
           title="Tamanho Máximo de Memória RAM (GB)"
-          value={mobo.ramMaxSize}
+          value={mobo.motherBoard.ramMaxSize}
           placeholder="4"
           setValue={(value) => {
             if (value < 0) return;
-            dispatch({ type: "ramMaxSize", payload: value });
+            dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, ramMaxSize: value } });
           }}
         />
         <DefaultNumberInput
           title="Velocidade Máxima de Memória RAM (MHz)"
-          value={mobo.ramMaxSpeed}
+          value={mobo.motherBoard.ramMaxSpeed}
           placeholder="3200"
           setValue={(value) => {
             if (value < 0) return;
-            dispatch({ type: "ramMaxSpeed", payload: value });
+            dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, ramMaxSpeed: value } });
           }}
         />
         <DefaultNumberInput
           title="Canais de Memória RAM"
-          value={mobo.ramChannels}
+          value={mobo.motherBoard.ramChannels}
           placeholder="2"
           setValue={(value) => {
             if (value < 0) return;
-            dispatch({ type: "ramChannels", payload: value });
+            dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, ramChannels: value } });
           }}
         />
 
@@ -249,8 +268,9 @@ const MotherBoarForm = ({
             name="ecc"
             id="ecc"
             className="default-select-input"
+            value={mobo.motherBoard.ramEcc ? "true" : "false"}
             onChange={(e) => {
-              dispatch({ type: "ramEcc", payload: e.target.value === "true" });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, ramEcc: e.target.value === "true" } });
             }}
           >
             <option value="false">Não</option>
@@ -260,75 +280,75 @@ const MotherBoarForm = ({
         <div className="usb grid grid-cols-2 gap-2">
           <DefaultNumberInput
             title="Portas USB 2.0"
-            value={mobo.usb2}
+            value={mobo.motherBoard.usb2}
             placeholder="2"
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "usb2", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, usb2: value } });
             }}
           />
           <DefaultNumberInput
             title="Portas USB 3.0"
-            value={mobo.usb3}
+            value={mobo.motherBoard.usb3}
             placeholder="2"
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "usb3", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, usb3: value } });
             }}
           />
           <DefaultNumberInput
             title="Portas USB 3.1"
-            value={mobo.usb3_1}
+            value={mobo.motherBoard.usb3_1}
             placeholder="2"
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "usb3_1", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, usb3_1: value } });
             }}
           />
           <DefaultNumberInput
             title="Portas USB 3.2"
-            value={mobo.usb3_2}
+            value={mobo.motherBoard.usb3_2}
             placeholder="2"
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "usb3_2", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, usb3_2: value } });
             }}
           />
           <DefaultNumberInput
             title="Portas USB-C"
-            value={mobo.usbTypeC}
+            value={mobo.motherBoard.usbTypeC}
             placeholder="2"
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "usbTypeC", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, usbTypeC: value } });
             }}
           />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <DefaultNumberInput
             title="Portas SATA"
-            value={mobo.sata}
+            value={mobo.motherBoard.sata}
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "sata", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, sata: value } });
             }}
           />
           <DefaultNumberInput
             title="Portas M.2"
-            value={mobo.m2}
+            value={mobo.motherBoard.m2}
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "m2", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, m2: value } });
             }}
           />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <DefaultNumberInput
             title="Portas PCI Express"
-            value={mobo.pcieX16}
+            value={mobo.motherBoard.pcieX16}
             setValue={(value) => {
               if (value < 0) return;
-              dispatch({ type: "pcieX16", payload: value });
+              dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, pcieX16: value } });
             }}
           />
           <div className="flex flex-col">
@@ -337,10 +357,10 @@ const MotherBoarForm = ({
               name="pciGen"
               id="pciGen"
               required
-              value={mobo.pciGen}
+              value={mobo.motherBoard.pciGen}
               className="default-select-input"
               onChange={(e) => {
-                dispatch({ type: "pciGen", payload: e.target.value });
+                dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, pciGen: e.target.value } });
               }}
             >
               <option value="">Selecionar Versão</option>
@@ -360,10 +380,10 @@ const MotherBoarForm = ({
               className="default-date-input"
               id="releaseDate"
               value={
-                mobo.launchDate?.toISOString().split("T")[0] || "00/00/0000"
+                mobo.motherBoard.launchDate?.toISOString().split("T")[0] || ""
               }
               onChange={(e) => {
-                dispatch({ type: "launchDate", payload: e.target.valueAsDate });
+                dispatch({ type: "motherBoard", payload: { ...mobo.motherBoard, launchDate: e.target.valueAsDate } });
               }}
             />
           </div>
@@ -390,7 +410,7 @@ const MotherBoarForm = ({
 
 export default function MotherBoard() {
   const [createMode, setCreateMode] = React.useState(false);
-  const [currentMobo, setCurrentMobo] = React.useState<MotherBoard | null>(
+  const [currentMobo, setCurrentMobo] = React.useState<Mobo | null>(
     null
   );
   const [page, setPage] = React.useState(1);
@@ -402,16 +422,13 @@ export default function MotherBoard() {
       searchTerm: searchTerm,
       take: 10,
     },
-    { refetchOnWindowFocus: false,
-    
-    }
+    { refetchOnWindowFocus: false }
   );
 
   React.useEffect(() => {
-    if(currentMobo === null) return void mobos.refetch();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[currentMobo])
-
+    if (currentMobo === null) return void mobos.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentMobo]);
 
   if (createMode || currentMobo) {
     return (
@@ -419,14 +436,12 @@ export default function MotherBoard() {
         back={(refetch) => {
           setCreateMode(false);
           setCurrentMobo(null);
-          if(refetch) void mobos.refetch();
+          if (refetch) void mobos.refetch();
         }}
         moboToEdit={currentMobo || undefined}
       />
     );
   }
-
-
 
   return (
     <div className="p-2">
@@ -468,13 +483,13 @@ export default function MotherBoard() {
                 <button
                   className="secondary-button"
                   onClick={() => {
-                    setCurrentMobo(mobo);
+                    setCurrentMobo({...mobo, motherBoard: mobo.motherBoard as MotherBoard});
                   }}
                 >
                   {mobo.name}
                 </button>
               </td>
-              <td>{mobo.socket.name}</td>
+              <td>{mobo.motherBoard?.socket?.name}</td>
               <td>{mobo.brand}</td>
             </tr>
           ))}

@@ -24,3 +24,17 @@ export interface GenericPart {
         | "other";
 }
 
+export enum PartType {
+    CPU = "cpu",
+    GPU = "gpu",
+    RAM = "ram",
+    MOTHERBOARD = "motherboard",
+    STORAGE = "storage",
+    PSU = "psu",
+    CASE = "case",
+    COOLER = "cooler",
+    MONITOR = "monitor",
+    KEYBOARD = "keyboard",
+    MOUSE = "mouse",
+    HEADSET = "headset",
+}
